@@ -22,18 +22,10 @@ void InverseCompton::setPhotonField(PhotonField photonField) {
 		initRate(getDataPath("MFP_IC.dat"));
 		initTableBackgroundEnergy(getDataPath("CMBcum.dat"));
 		break;
-	case IRB:  // default: Kneiske '04 IRB model
-	case IRB_Kneiske04:
-		setDescription("InverseCompton: IRB Kneiske '04");
-		initRate(getDataPath("epp_IRB_Kneiske04.txt"));
-		break;
+	case EBL:  // default: Kneiske '04 IRB model
 	case IRB_Kneiske10:
 		setDescription("InverseCompton: IRB Kneiske '10 (lower limit)");
 		initRate(getDataPath("epp_IRB_Kneiske10.txt"));
-		break;
-	case IRB_Stecker05:
-		setDescription("InverseCompton: IRB Stecker '05");
-		initRate(getDataPath("epp_IRB_Stecker05.txt"));
 		break;
 	case IRB_Franceschini08:
 		setDescription("InverseCompton: IRB Franceschini '08");
@@ -136,7 +128,7 @@ double InverseCompton::energyFraction(double E, double z) const {
 	double s = centerOfMassEnergy2(E, e, mu);
 	double ymin = pow(mass_electron * c_squared, 2) / s;
     double eps = ethr / E;
-	double ymax = 1 - eps; /* should be 1 - eps*/
+	double ymax = 1 - eps; 
 	double y;
 	double r = random.rand();
 	double gb = 0;
