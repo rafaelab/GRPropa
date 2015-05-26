@@ -239,14 +239,6 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
         	for (int j=0; j<)
 
         }
-
-        // for (int j=0; j<nl; j++) 
-        // 	tabPhotonEnergy.push_back(entries[0][j] * eV);
-        // for (int i=1; i<nc+1; i++){
-        // 	for (int j=0; j<nl; j++){
-        // 		tabProb.push_back(entries[i][j]);
-        // 	}
-        // }
         infile.close();
 
     } // conditional: redshift dependent
@@ -268,11 +260,10 @@ double PairProduction::energyFraction(double E, double z) const {
 	// drawing energy of background photon according to number density (integral)
 	//double e = interpolate(random.rand(), tabProb, tabPhotonEnergy);
 	double rnd = random.rand();
-	// double rnd = 1e-4;
 	double e = 0;
 	if (redshiftDependence == true) {
 		e = interpolate2d(z, rnd, tabRedshift, tabProb, tabPhotonEnergy);
-		std::cout << z << "\t" << rnd << "\t" << e / eV << std::endl;
+		// std::cout << z << "\t" << rnd << "\t" << e / eV << std::endl;
 	 } else {
 		e = (1 + z) * interpolate(rnd, tabProb, tabPhotonEnergy);
 		// std::cout << z << "\t" << rnd << "\t" << e / eV << std::endl;
