@@ -218,10 +218,11 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
         int nc; // number of columns (redshifts + one column for energy)
         int nl = 250; // number of lines (energies)
 
-		if (photonField == EBL_Finke10) nc = 500;
+		if (photonField == EBL_Finke10) nc = 23;
        	else if (photonField == EBL_Gilmore12) nc = 20;
         else if (photonField == EBL_Kneiske10) nc = 5;
         else if (photonField == EBL_Franceschini08)	nc = 11;
+        else if (photonField == EBL_Dominguez11 || photonField == EBL_Dominguez11_LL || photonField == EBL_Dominguez11_LL) nc = 20;
         else throw std::runtime_error("EBL model not defined for redshift dependent treatment (or not defined at all).");
 
         double entries[nc+1][nl];
