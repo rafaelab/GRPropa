@@ -2,7 +2,7 @@
 #include "grpropa/Common.h"
 
 #include <vector>
-#include <stdexcept>
+#include <iostream>
 
 namespace grpropa {
 
