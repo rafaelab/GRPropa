@@ -6,11 +6,14 @@ namespace grpropa {
 // Photon fields
 // The default IRB model is that of Finke et al. 2010
 enum PhotonField {
-  CMB, IRB, IRB_Finke10, IRB_Kneiske04, IRB_Kneiske10, IRB_Franceschini08, IRB_Stecker05, IRB_withRedshift_Kneiske04
+  CMB, 
+  EBL, EBL_Finke10, EBL_Kneiske10, EBL_Franceschini08, EBL_Gilmore12, EBL_Dominguez11, EBL_Dominguez11_UL, EBL_Dominguez11_LL, 
+  CRB, CRB_Protheroe96, CRB_ARCADE2
 };
 
-// Returns overall comoving scaling factor
-double photonFieldScaling(PhotonField photonField, double z);
+// Returns list of available photon background models
+void listOfPhotonBackgroundModels();
+
 
 } // namespace grpropa
 

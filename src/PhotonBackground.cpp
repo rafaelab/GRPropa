@@ -6,28 +6,19 @@
 
 namespace grpropa {
 
-// Overall redshift scaling of the Kneiske et al. 2004 IRB, astro-ph/0309141
-// The scaling is calculated in data-tools/PhotonField/Kneiske2004_IRB_scaling.py
-double a[10] = {-1, 0, 0.2, 0.4, 0.6, 1, 2, 3, 4, 5 };
-static std::vector<double> zKneiske(a, a + sizeof(a) / sizeof(double));
-double b[10] = {1.250665, 1., 0.9749867, 0.93999977, 0.88430409, 0.64952017, 0.27170436,
-		0.130244, 0.05971749, 0. };
-static std::vector<double> sKneiske(b, b + sizeof(b) / sizeof(double));
-
-double photonFieldScaling(PhotonField photonField, double z) {
-	switch (photonField) {
-	case CMB:
-		return 1.; // CMB-like scaling
-	case IRB:
-        case IRB_Finke10:
-	case IRB_Kneiske04:
-	case IRB_Kneiske10:
-	case IRB_Stecker05:
-	case IRB_Franceschini08:
-		return interpolate(z, zKneiske, sKneiske);
-	default:
-		throw std::runtime_error("PhotonField: unknown photon background");
-	}
+void listOfPhotonBackgroundModels()
+{
+	std::cout << "List of available phton background models." << std::endl;
+	std::cout << " - CMB" << std::endl;
+	std::cout << " - CRB:" << std::endl;
+	std::cout << "     ARCADE2" << std::endl;
+	std::cout << "     Protheroe96" << std::endl;
+	std::cout << " - EBL:" << std::endl;
+	std::cout << "      Gilmore+ '12" << std::endl;
+	std::cout << "      Dominguez+ '11 (std, upper, lower)" << std::endl;
+	std::cout << "      Finke+ '10" << std::endl;
+	std::cout << "      Kneiske & Dole '10" << std::endl;
+	std::cout << "      Franceschini+ '08" << std::endl;
 }
 
 } // namespace grpropa
