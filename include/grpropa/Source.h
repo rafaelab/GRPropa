@@ -14,11 +14,11 @@ namespace grpropa {
  */
 class SourceFeature: public Referenced {
 protected:
-	std::string description;
+    std::string description;
 public:
-	virtual void prepareParticle(ParticleState& particle) const;
-	virtual void prepareCandidate(Candidate& candidate) const;
-	std::string getDescription() const;
+    virtual void prepareParticle(ParticleState& particle) const;
+    virtual void prepareCandidate(Candidate& candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -30,11 +30,11 @@ public:
  to be modified accordingly.
  */
 class Source: public Referenced {
-	std::vector<ref_ptr<SourceFeature> > features;
+    std::vector<ref_ptr<SourceFeature> > features;
 public:
-	void add(SourceFeature* feature);
-	ref_ptr<Candidate> getCandidate() const;
-	std::string getDescription() const;
+    void add(SourceFeature* feature);
+    ref_ptr<Candidate> getCandidate() const;
+    std::string getDescription() const;
 };
 
 /**
@@ -45,11 +45,11 @@ public:
  needed in one simulation.
  */
 class SourceList: public Source {
-	std::vector<ref_ptr<Source> > sources;
-	std::vector<double> cdf;
+    std::vector<ref_ptr<Source> > sources;
+    std::vector<double> cdf;
 public:
-	void add(Source* source, double weight = 1);
-	ref_ptr<Candidate> getCandidate() const;
+    void add(Source* source, double weight = 1);
+    ref_ptr<Candidate> getCandidate() const;
 };
 
 /**
@@ -57,11 +57,11 @@ public:
  @brief Particle type at the source
  */
 class SourceParticleType: public SourceFeature {
-	int id;
+    int id;
 public:
-	SourceParticleType(int id);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceParticleType(int id);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -69,13 +69,13 @@ public:
  @brief Multiple particle types with individual relative abundances
  */
 class SourceMultipleParticleTypes: public SourceFeature {
-	std::vector<int> particleTypes;
-	std::vector<double> cdf;
+    std::vector<int> particleTypes;
+    std::vector<double> cdf;
 public:
-	SourceMultipleParticleTypes();
-	void add(int id, double weight = 1);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceMultipleParticleTypes();
+    void add(int id, double weight = 1);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -83,11 +83,11 @@ public:
  @brief Sets the initial energy to a given value
  */
 class SourceEnergy: public SourceFeature {
-	double E;
+    double E;
 public:
-	SourceEnergy(double energy);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceEnergy(double energy);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -95,13 +95,13 @@ public:
  @brief Particle energy following a power law spectrum
  */
 class SourcePowerLawSpectrum: public SourceFeature {
-	double Emin;
-	double Emax;
-	double index;
+    double Emin;
+    double Emax;
+    double index;
 public:
-	SourcePowerLawSpectrum(double Emin, double Emax, double index);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourcePowerLawSpectrum(double Emin, double Emax, double index);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -109,12 +109,12 @@ public:
  @brief Position of a point source
  */
 class SourcePosition: public SourceFeature {
-	Vector3d position; /**< Source position */
+    Vector3d position; /**< Source position */
 public:
-	SourcePosition(Vector3d position);
-	SourcePosition(double d);
-	void prepareParticle(ParticleState &state) const;
-	void setDescription();
+    SourcePosition(Vector3d position);
+    SourcePosition(double d);
+    void prepareParticle(ParticleState &state) const;
+    void setDescription();
 };
 
 /**
@@ -122,13 +122,13 @@ public:
  @brief Multiple point source positions with individual luminosities
  */
 class SourceMultiplePositions: public SourceFeature {
-	std::vector<Vector3d> positions;
-	std::vector<double> cdf;
+    std::vector<Vector3d> positions;
+    std::vector<double> cdf;
 public:
-	SourceMultiplePositions();
-	void add(Vector3d position, double weight = 1);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceMultiplePositions();
+    void add(Vector3d position, double weight = 1);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -136,12 +136,12 @@ public:
  @brief Uniform random source positions inside a sphere
  */
 class SourceUniformSphere: public SourceFeature {
-	Vector3d center;
-	double radius;
+    Vector3d center;
+    double radius;
 public:
-	SourceUniformSphere(Vector3d center, double radius);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceUniformSphere(Vector3d center, double radius);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -149,12 +149,12 @@ public:
  @brief Uniform random source positions on a sphere
  */
 class SourceUniformShell: public SourceFeature {
-	Vector3d center;
-	double radius;
+    Vector3d center;
+    double radius;
 public:
-	SourceUniformShell(Vector3d center, double radius);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceUniformShell(Vector3d center, double radius);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -162,16 +162,16 @@ public:
  @brief Uniform random source positions inside a box
  */
 class SourceUniformBox: public SourceFeature {
-	Vector3d origin;
-	Vector3d size;
+    Vector3d origin;
+    Vector3d size;
 public:
-	/** Constructor
-	 @param origin	lower box corner
-	 @param size	upper box corner
-	 */
-	SourceUniformBox(Vector3d origin, Vector3d size);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    /** Constructor
+     @param origin  lower box corner
+     @param size    upper box corner
+     */
+    SourceUniformBox(Vector3d origin, Vector3d size);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -184,18 +184,18 @@ public:
  converting to a comoving distance.
  */
 class SourceUniform1D: public SourceFeature {
-	double minD; // minimum light travel distance
-	double maxD; // maximum light travel distance
-	bool withCosmology;
+    double minD; // minimum light travel distance
+    double maxD; // maximum light travel distance
+    bool withCosmology;
 public:
-	/** Constructor
-	 @param minD	minimum comoving distance
-	 @param maxD 	maximum comoving distance
-	 @param withCosmology	specify if universe expanding
-	 */
-	SourceUniform1D(double minD, double maxD, bool withCosmology=true);
-	void prepareParticle(ParticleState& particle) const;
-	void setDescription();
+    /** Constructor
+     @param minD    minimum comoving distance
+     @param maxD    maximum comoving distance
+     @param withCosmology   specify if universe expanding
+     */
+    SourceUniform1D(double minD, double maxD, bool withCosmology=true);
+    void prepareParticle(ParticleState& particle) const;
+    void setDescription();
 };
 
 /**
@@ -203,11 +203,11 @@ public:
  @brief Random source positions from a density grid
  */
 class SourceDensityGrid: public SourceFeature {
-	ref_ptr<ScalarGrid> grid;
+    ref_ptr<ScalarGrid> grid;
 public:
-	SourceDensityGrid(ref_ptr<ScalarGrid> densityGrid);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceDensityGrid(ref_ptr<ScalarGrid> densityGrid);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -215,11 +215,11 @@ public:
  @brief Random source positions from a 1D density grid
  */
 class SourceDensityGrid1D: public SourceFeature {
-	ref_ptr<ScalarGrid> grid;
+    ref_ptr<ScalarGrid> grid;
 public:
-	SourceDensityGrid1D(ref_ptr<ScalarGrid> densityGrid);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceDensityGrid1D(ref_ptr<ScalarGrid> densityGrid);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -228,9 +228,9 @@ public:
  */
 class SourceIsotropicEmission: public SourceFeature {
 public:
-	SourceIsotropicEmission();
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceIsotropicEmission();
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -238,11 +238,11 @@ public:
  @brief Emission in a discrete direction
  */
 class SourceDirection: public SourceFeature {
-	Vector3d direction;
+    Vector3d direction;
 public:
-	SourceDirection(Vector3d direction = Vector3d(-1, 0, 0));
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceDirection(Vector3d direction = Vector3d(-1, 0, 0));
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -250,12 +250,12 @@ public:
  @brief Uniform random emission inside a cone
  */
 class SourceEmissionCone: public SourceFeature {
-	Vector3d direction;
-	double aperture;
+    Vector3d direction;
+    double aperture;
 public:
-	SourceEmissionCone(Vector3d direction, double aperture);
-	void prepareParticle(ParticleState &particle) const;
-	void setDescription();
+    SourceEmissionCone(Vector3d direction, double aperture);
+    void prepareParticle(ParticleState &particle) const;
+    void setDescription();
 };
 
 /**
@@ -263,11 +263,11 @@ public:
  @brief Discrete redshift (time of emission)
  */
 class SourceRedshift: public SourceFeature {
-	double z;
+    double z;
 public:
-	SourceRedshift(double z);
-	void prepareCandidate(Candidate &candidate) const;
-	void setDescription();
+    SourceRedshift(double z);
+    void prepareCandidate(Candidate &candidate) const;
+    void setDescription();
 };
 
 /**
@@ -275,11 +275,11 @@ public:
  @brief Uniform redshift distribution (time of emission)
  */
 class SourceUniformRedshift: public SourceFeature {
-	double zmin, zmax;
+    double zmin, zmax;
 public:
-	SourceUniformRedshift(double zmin, double zmax);
-	void prepareCandidate(Candidate &candidate) const;
-	void setDescription();
+    SourceUniformRedshift(double zmin, double zmax);
+    void prepareCandidate(Candidate &candidate) const;
+    void setDescription();
 };
 
 /**
@@ -291,9 +291,9 @@ public:
  */
 class SourceRedshift1D: public SourceFeature {
 public:
-	SourceRedshift1D();
-	void prepareCandidate(Candidate &candidate) const;
-	void setDescription();
+    SourceRedshift1D();
+    void prepareCandidate(Candidate &candidate) const;
+    void setDescription();
 };
 
 
