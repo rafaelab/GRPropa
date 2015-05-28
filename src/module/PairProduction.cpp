@@ -25,58 +25,58 @@ void PairProduction::setPhotonField(PhotonField photonField) {
     case EBL:  // default: Gilmore '12 IRB model
     case EBL_Gilmore12:
         redshiftDependence = true;
-        setDescription("PairProduction: Gilmore et al. 2012");
+        setDescription("Pair  Production: EBL Gilmore et al. 2012");
         initRate(getDataPath("PP-EBL_Gilmore12.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Gilmore12.txt"));
         break;
     case EBL_Dominguez11:
         redshiftDependence = true;
-        setDescription("PairProduction: Dominguez et al. 2011");
+        setDescription("Pair Production: EBL Dominguez et al. 2011");
         // initRate(getDataPath("PP-EBL_Dominguez11.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11.txt"));
         break;
     case EBL_Dominguez11_UL:
         redshiftDependence = true;
-        setDescription("PairProduction: Dominguez et al. 2011 (upper limit)");
+        setDescription("Pair Production: EBL Dominguez et al. 2011 (upper limit)");
         // initRate(getDataPath("PP-EBL_Dominguez11_upper.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_upper.txt"));
         break;
     case EBL_Dominguez11_LL:
         redshiftDependence = true;
-        setDescription("PairProduction: Dominguez et al. 2011 (lower limit)");
-        // initRate(getDataPath("PP-EBL_Dominguez11_lower.txt"));
+        setDescription("Pair Production: EBL Dominguez et al. 2011 (lower limit)");
+        initRate(getDataPath("PP-EBL_Dominguez11_lower.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_lower.txt"));
         break;
     case EBL_Finke10:
         redshiftDependence = true;
-        setDescription("PairProduction: EBL Finke et al. 2010");
+        setDescription("Pair Production: EBL Finke et al. 2010");
         initRate(getDataPath("PP-EBL_Finke10.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Finke10.txt"));
         break;
     case EBL_Kneiske10:
         redshiftDependence = true;
-        setDescription("PairProduction: EBL Kneiske & Dole 2010 (lower limit)");
+        setDescription("Pair Production: EBL Kneiske & Dole 2010 (lower limit)");
         initRate(getDataPath("PP-EBL_Kneiske10.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Kneiske10.txt"));
         break;
     case EBL_Franceschini08:
         redshiftDependence = true;
-        setDescription("PairProduction: EBL Franceschini et al. 2008");
+        setDescription("Pair Production: EBL Franceschini et al. 2008");
         initRate(getDataPath("PP-EBL_Franceschini08.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Franceschini08.txt"));
         break;
     case CRB:
     case CRB_Protheroe96:
         redshiftDependence = false;
-        setDescription("PairProduction: CRB Protheroe & Biermann 1996");
+        setDescription("Pair Production: CRB Protheroe & Biermann 1996");
         initRate(getDataPath("PP-CRB_Protheroe96.txt"));
-        initTableBackgroundEnergy(getDataPath("cumDensities-CRB_Protheroe96.txt"));
+        initTableBackgroundEnergy(getDataPath("photonProbabilities-CRB_Protheroe96.txt"));
         break;
     case CRB_ARCADE2:
         redshiftDependence = false;
-        setDescription("PairProduction: CRB ARCADE2 2010");
+        setDescription("Pair Production: CRB ARCADE2 2010");
         initRate(getDataPath("PP-CRB_ARCADE2.txt"));
-        initTableBackgroundEnergy(getDataPath("cumDensities-CRB_ARCADE2.txt"));
+        initTableBackgroundEnergy(getDataPath("photonProbabilities-CRB_ARCADE2.txt"));
         break;
     default:
         throw std::runtime_error("PairProduction: unknown photon background");
