@@ -23,11 +23,11 @@ void InverseCompton::setPhotonField(PhotonField photonField) {
 		initTableBackgroundEnergy(getDataPath("CMBcum.dat"));
 		break;
 	case EBL:  // default: Kneiske '04 IRB model
-	case IRB_Kneiske10:
+	case EBL_Kneiske10:
 		setDescription("InverseCompton: IRB Kneiske '10 (lower limit)");
 		initRate(getDataPath("epp_IRB_Kneiske10.txt"));
 		break;
-	case IRB_Franceschini08:
+	case EBL_Franceschini08:
 		setDescription("InverseCompton: IRB Franceschini '08");
 		initRate(getDataPath("epp_IRB_Franceschini08.txt"));
 		break;
@@ -186,7 +186,7 @@ double InverseCompton::lossLength(int id, double en, double z) const {
 	else
 		rate = tabRate.back() * pow(en / tabEnergy.back(), -0.6); // extrapolation
 
-	rate *= pow(1 + z, 3) * photonFieldScaling(photonField, z);
+	rate *= pow(1 + z, 3);
 	return 1. / rate;
 }
 
@@ -207,7 +207,7 @@ void InverseCompton::process(Candidate *c) const {
   	    //double rate = interpolate(E, tabEnergy, tabRate);
         double rate = 1/ lossLength(id, E / (1 + z), z);
 	    // cosmological scaling, rate per comoving distance)
-        rate *= pow(1 + z, 2) * photonFieldScaling(photonField, z);
+        rate *= pow(1 + z, 2);
 
 		Random &random = Random::instance();
 	    double randDistance = -log(random.rand()) / rate;
