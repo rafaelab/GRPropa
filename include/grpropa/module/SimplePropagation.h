@@ -16,16 +16,16 @@ namespace grpropa {
  */
 class SimplePropagation: public Module {
 private:
-	double minStep, maxStep;
+    double minStep, maxStep;
 
 public:
-	SimplePropagation(double minStep = 0, double maxStep = 10 * Mpc);
-	void process(Candidate *candidate) const;
-	void setMinimumStep(double minStep);
-	void setMaximumStep(double maxStep);
-	double getMinimumStep() const;
-	double getMaximumStep() const;
-	std::string getDescription() const;
+    SimplePropagation(double minStep = 0, double maxStep = 10 * Mpc);
+    void process(Candidate *candidate) const;
+    void setMinimumStep(double minStep);
+    void setMaximumStep(double maxStep);
+    double getMinimumStep() const;
+    double getMaximumStep() const;
+    std::string getDescription() const;
 };
 
 } // namespace grpropa

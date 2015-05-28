@@ -23,7 +23,7 @@ private:
     double CriticalB;
 public:
     Synchrotron(ref_ptr<MagneticField> field, double Bcr = 4.14e9);
-	void process(Candidate *candidate) const;
+    void process(Candidate *candidate) const;
 };
 
 

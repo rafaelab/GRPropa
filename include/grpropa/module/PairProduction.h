@@ -18,30 +18,29 @@ namespace grpropa {
  */
 class PairProduction: public Module {
 private:
-	PhotonField photonField;
+    PhotonField photonField;
 
-	std::vector<double> tabMFP; /* tabulated mean free path [m] for protons at z = 0 */
-	std::vector<double> tabEnergy; /* tabulated energy [eV] */
-	std::vector<double> tabRate; /* tabulated rate [1/Mpc] */
-	std::vector<double> tabLogEnergy; /* tabulated energy for interpolation2d */
+    std::vector<double> tabEnergy; /* tabulated energy [eV] */
+    std::vector<double> tabRate; /* tabulated rate [1/Mpc] */
     std::vector<double> tabRedshift; /* tabulated redshifts for z dependence of the IRB */
-	std::vector<double> tabPhotonEnergy; /* background photon energy */
-	std::vector<double> tabProb; /* cumulative probability for background photon. */
-	double limit; /* fraction of energy loss length to limit the next step */
-    bool redshiftDependence;
-	
-public:
-	PairProduction(PhotonField photonField = CMB, double limit = 0.1);
+    std::vector<double> tabPhotonEnergy; /* background photon energy*/
+    std::vector<double> tabProb; /* cumulative probability for background photon. */
 
-	void setPhotonField(PhotonField photonField);
-	void setLimit(double limit);
-	void initTableBackgroundEnergy(std::string filename);
-	void initRate(std::string filename);
-	void process(Candidate *candidate) const;
-	double centerOfMassEnergy2(double E, double e, double mu) const; 
-	double energyFraction(double E, double z) const;
-	double lossLength(int id, double en, double z) const;
-	void performInteraction(Candidate *candidate) const;
+    double limit; /* fraction of energy loss length to limit the next step */
+    bool redshiftDependence;
+    
+public:
+    PairProduction(PhotonField photonField = CMB, double limit = 0.1);
+
+    void setPhotonField(PhotonField photonField);
+    void setLimit(double limit);
+    void initTableBackgroundEnergy(std::string filename);
+    void initRate(std::string filename);
+    void process(Candidate *candidate) const;
+    double centerOfMassEnergy2(double E, double e, double mu) const; 
+    double energyFraction(double E, double z) const;
+    double lossLength(int id, double en, double z) const;
+    void performInteraction(Candidate *candidate) const;
 };
 
 } // namespace grpropa

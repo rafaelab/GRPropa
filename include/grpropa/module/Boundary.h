@@ -15,16 +15,16 @@ namespace grpropa {
  */
 class PeriodicBox: public Module {
 private:
-	Vector3d origin;
-	Vector3d size;
+    Vector3d origin;
+    Vector3d size;
 
 public:
-	PeriodicBox();
-	PeriodicBox(Vector3d origin, Vector3d size);
-	void process(Candidate *candidate) const;
-	void setOrigin(Vector3d origin);
-	void setSize(Vector3d size);
-	std::string getDescription() const;
+    PeriodicBox();
+    PeriodicBox(Vector3d origin, Vector3d size);
+    void process(Candidate *candidate) const;
+    void setOrigin(Vector3d origin);
+    void setSize(Vector3d size);
+    std::string getDescription() const;
 };
 
 /**
@@ -37,16 +37,16 @@ public:
  */
 class ReflectiveBox: public Module {
 private:
-	Vector3d origin;
-	Vector3d size;
+    Vector3d origin;
+    Vector3d size;
 
 public:
-	ReflectiveBox();
-	ReflectiveBox(Vector3d origin, Vector3d size);
-	void process(Candidate *candidate) const;
-	void setOrigin(Vector3d origin);
-	void setSize(Vector3d size);
-	std::string getDescription() const;
+    ReflectiveBox();
+    ReflectiveBox(Vector3d origin, Vector3d size);
+    void process(Candidate *candidate) const;
+    void setOrigin(Vector3d origin);
+    void setSize(Vector3d size);
+    std::string getDescription() const;
 };
 
 /**
@@ -59,23 +59,23 @@ public:
  */
 class CubicBoundary: public Module {
 private:
-	Vector3d origin;
-	double size;
-	double margin;
-	std::string flag;
-	std::string flagValue;
-	bool limitStep;
+    Vector3d origin;
+    double size;
+    double margin;
+    std::string flag;
+    std::string flagValue;
+    bool limitStep;
 
 public:
-	CubicBoundary();
-	CubicBoundary(Vector3d origin, double size);
-	void process(Candidate *candidate) const;
-	void setOrigin(Vector3d origin);
-	void setSize(double size);
-	void setMargin(double margin);
-	void setLimitStep(bool limitStep);
-	void setFlag(std::string flag, std::string flagValue);
-	std::string getDescription() const;
+    CubicBoundary();
+    CubicBoundary(Vector3d origin, double size);
+    void process(Candidate *candidate) const;
+    void setOrigin(Vector3d origin);
+    void setSize(double size);
+    void setMargin(double margin);
+    void setLimitStep(bool limitStep);
+    void setFlag(std::string flag, std::string flagValue);
+    std::string getDescription() const;
 };
 
 /**
@@ -88,23 +88,23 @@ public:
  */
 class SphericalBoundary: public Module {
 private:
-	Vector3d center;
-	double radius;
-	double margin;
-	std::string flag;
-	std::string flagValue;
-	bool limitStep;
+    Vector3d center;
+    double radius;
+    double margin;
+    std::string flag;
+    std::string flagValue;
+    bool limitStep;
 
 public:
-	SphericalBoundary();
-	SphericalBoundary(Vector3d center, double radius);
-	void process(Candidate *candidate) const;
-	void setCenter(Vector3d center);
-	void setRadius(double size);
-	void setMargin(double margin);
-	void setLimitStep(bool limitStep);
-	void setFlag(std::string flag, std::string flagValue);
-	std::string getDescription() const;
+    SphericalBoundary();
+    SphericalBoundary(Vector3d center, double radius);
+    void process(Candidate *candidate) const;
+    void setCenter(Vector3d center);
+    void setRadius(double size);
+    void setMargin(double margin);
+    void setLimitStep(bool limitStep);
+    void setFlag(std::string flag, std::string flagValue);
+    std::string getDescription() const;
 };
 
 /**
@@ -117,24 +117,24 @@ public:
  */
 class EllipsoidalBoundary: public Module {
 private:
-	Vector3d focalPoint1;
-	Vector3d focalPoint2;
-	double majorAxis;
-	double margin;
-	std::string flag;
-	std::string flagValue;
-	bool limitStep;
+    Vector3d focalPoint1;
+    Vector3d focalPoint2;
+    double majorAxis;
+    double margin;
+    std::string flag;
+    std::string flagValue;
+    bool limitStep;
 
 public:
-	EllipsoidalBoundary();
-	EllipsoidalBoundary(Vector3d focalPoint1, Vector3d focalPoint2, double majorAxis);
-	void process(Candidate *candidate) const;
-	void setFocalPoints(Vector3d focalPoint1, Vector3d focalPoint2);
-	void setMajorAxis(double size);
-	void setMargin(double margin);
-	void setLimitStep(bool limitStep);
-	void setFlag(std::string flag, std::string flagValue);
-	std::string getDescription() const;
+    EllipsoidalBoundary();
+    EllipsoidalBoundary(Vector3d focalPoint1, Vector3d focalPoint2, double majorAxis);
+    void process(Candidate *candidate) const;
+    void setFocalPoints(Vector3d focalPoint1, Vector3d focalPoint2);
+    void setMajorAxis(double size);
+    void setMargin(double margin);
+    void setLimitStep(bool limitStep);
+    void setFlag(std::string flag, std::string flagValue);
+    std::string getDescription() const;
 };
 
 } // namespace grpropa

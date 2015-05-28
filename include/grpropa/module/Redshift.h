@@ -11,8 +11,8 @@ namespace grpropa {
  */
 class Redshift: public Module {
 public:
-	void process(Candidate *candidate) const;
-	std::string getDescription() const;
+    void process(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -21,8 +21,8 @@ public:
  */
 class FutureRedshift: public Module {
 public:
-	void process(Candidate *candidate) const;
-	std::string getDescription() const;
+    void process(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 } // namespace grpropa

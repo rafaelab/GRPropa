@@ -14,16 +14,16 @@ namespace grpropa {
  It also limits the candidates next step size to ensure the maximum trajectory length is no exceeded.
  */
 class MaximumTrajectoryLength: public Module {
-	double maxLength;
-	std::string flag;
+    double maxLength;
+    std::string flag;
 public:
-	MaximumTrajectoryLength(double length = 0, std::string flag = "Deactivated");
-	void setMaximumTrajectoryLength(double length);
-	double getMaximumTrajectoryLength() const;
-	void setFlag(std::string flag);
-	std::string getFlag() const;
-	std::string getDescription() const;
-	void process(Candidate *candidate) const;
+    MaximumTrajectoryLength(double length = 0, std::string flag = "Deactivated");
+    void setMaximumTrajectoryLength(double length);
+    double getMaximumTrajectoryLength() const;
+    void setFlag(std::string flag);
+    std::string getFlag() const;
+    std::string getDescription() const;
+    void process(Candidate *candidate) const;
 };
 
 /**
@@ -34,16 +34,16 @@ public:
  In that case the property ("Deactivated", module::description) is set.
  */
 class MinimumEnergy: public Module {
-	double minEnergy;
-	std::string flag;
+    double minEnergy;
+    std::string flag;
 public:
-	MinimumEnergy(double minEnergy = 0, std::string flag = "Deactivated");
-	void setMinimumEnergy(double energy);
-	double getMinimumEnergy() const;
-	void setFlag(std::string flag);
-	std::string getFlag() const;
-	std::string getDescription() const;
-	void process(Candidate *candidate) const;
+    MinimumEnergy(double minEnergy = 0, std::string flag = "Deactivated");
+    void setMinimumEnergy(double energy);
+    double getMinimumEnergy() const;
+    void setFlag(std::string flag);
+    std::string getFlag() const;
+    std::string getDescription() const;
+    void process(Candidate *candidate) const;
 };
 
 /**
@@ -54,16 +54,16 @@ public:
  In that case the property ("Deactivated", module::description) is set.
  */
 class MinimumRedshift: public Module {
-	double zmin;
-	std::string flag;
+    double zmin;
+    std::string flag;
 public:
-	MinimumRedshift(double zmin = 0, std::string flag = "Deactivated");
-	void setMinimumRedshift(double z);
-	double getMinimumRedshift();
-	void setFlag(std::string flag);
-	std::string getFlag() const;
-	std::string getDescription() const;
-	void process(Candidate *candidate) const;
+    MinimumRedshift(double zmin = 0, std::string flag = "Deactivated");
+    void setMinimumRedshift(double z);
+    double getMinimumRedshift();
+    void setFlag(std::string flag);
+    std::string getFlag() const;
+    std::string getDescription() const;
+    void process(Candidate *candidate) const;
 };
 
 } // namespace grpropa

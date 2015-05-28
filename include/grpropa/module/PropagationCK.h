@@ -19,58 +19,58 @@ namespace grpropa {
  */
 class PropagationCK: public Module {
 public:
-	class Y {
-	public:
-		Vector3d x, u; /*< phase-point: position and direction */
+    class Y {
+    public:
+        Vector3d x, u; /*< phase-point: position and direction */
 
-		Y() {
-		}
+        Y() {
+        }
 
-		Y(const Vector3d &x, const Vector3d &u) :
-				x(x), u(u) {
-		}
+        Y(const Vector3d &x, const Vector3d &u) :
+                x(x), u(u) {
+        }
 
-		Y(double f) :
-				x(Vector3d(f, f, f)), u(Vector3d(f, f, f)) {
-		}
+        Y(double f) :
+                x(Vector3d(f, f, f)), u(Vector3d(f, f, f)) {
+        }
 
-		Y operator *(double f) const {
-			return Y(x * f, u * f);
-		}
+        Y operator *(double f) const {
+            return Y(x * f, u * f);
+        }
 
-		Y &operator +=(const Y &y) {
-			x += y.x;
-			u += y.u;
-			return *this;
-		}
-	};
+        Y &operator +=(const Y &y) {
+            x += y.x;
+            u += y.u;
+            return *this;
+        }
+    };
 
 private:
-	std::vector<double> a, b, bs; /*< Cash-Karp coefficients */
-	ref_ptr<MagneticField> field;
-	double tolerance; /*< target relative error of the numerical integration */
-	double minStep; /*< minimum step size of the propagation */
-	double maxStep; /*< maximum step size of the propagation */
+    std::vector<double> a, b, bs; /*< Cash-Karp coefficients */
+    ref_ptr<MagneticField> field;
+    double tolerance; /*< target relative error of the numerical integration */
+    double minStep; /*< minimum step size of the propagation */
+    double maxStep; /*< maximum step size of the propagation */
 
 public:
-	PropagationCK(ref_ptr<MagneticField> field = NULL, double tolerance = 1e-4, double minStep = 0.1 * kpc, double maxStep = 1 * Gpc);
-	void process(Candidate *candidate) const;
+    PropagationCK(ref_ptr<MagneticField> field = NULL, double tolerance = 1e-4, double minStep = 0.1 * kpc, double maxStep = 1 * Gpc);
+    void process(Candidate *candidate) const;
 
-	// derivative of phase point, dY/dt = d/dt(x, u) = (v, du/dt)
-	// du/dt = q*c^2/E * (u x B)
-	Y dYdt(const Y &y, ParticleState &p) const;
+    // derivative of phase point, dY/dt = d/dt(x, u) = (v, du/dt)
+    // du/dt = q*c^2/E * (u x B)
+    Y dYdt(const Y &y, ParticleState &p) const;
 
-	void tryStep(const Y &y, Y &out, Y &error, double t, ParticleState &p) const;
+    void tryStep(const Y &y, Y &out, Y &error, double t, ParticleState &p) const;
 
-	void setField(ref_ptr<MagneticField> field);
-	void setTolerance(double tolerance);
-	void setMinimumStep(double minStep);
-	void setMaximumStep(double maxStep);
+    void setField(ref_ptr<MagneticField> field);
+    void setTolerance(double tolerance);
+    void setMinimumStep(double minStep);
+    void setMaximumStep(double maxStep);
 
-	double getTolerance() const;
-	double getMinimumStep() const;
-	double getMaximumStep() const;
-	std::string getDescription() const;
+    double getTolerance() const;
+    double getMinimumStep() const;
+    double getMaximumStep() const;
+    std::string getDescription() const;
 };
 
 } // namespace grpropa

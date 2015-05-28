@@ -12,8 +12,8 @@ namespace grpropa {
  */
 class ShellOutput: public Module {
 public:
-	void process(Candidate *candidate) const;
-	std::string getDescription() const;
+    void process(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -22,8 +22,8 @@ public:
  */
 class ShellOutput1D: public Module {
 public:
-	void process(Candidate *candidate) const;
-	std::string getDescription() const;
+    void process(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -32,9 +32,9 @@ public:
  */
 class ShellPropertyOutput: public Module {
 public:
-	typedef Loki::AssocVector<std::string, std::string> PropertyMap;
-	void process(Candidate *candidate) const;
-	std::string getDescription() const;
+    typedef Loki::AssocVector<std::string, std::string> PropertyMap;
+    void process(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 } // namespace cprpropa

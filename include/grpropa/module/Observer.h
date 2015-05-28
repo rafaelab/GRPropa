@@ -14,7 +14,7 @@
 namespace grpropa {
 
 enum DetectionState {
-	DETECTED, VETO, NOTHING
+    DETECTED, VETO, NOTHING
 };
 
 /**
@@ -23,11 +23,11 @@ enum DetectionState {
  */
 class ObserverFeature: public Referenced {
 protected:
-	std::string description;
+    std::string description;
 public:
-	virtual DetectionState checkDetection(Candidate *candidate) const;
-	virtual void onDetection(Candidate *candidate) const;
-	virtual std::string getDescription() const;
+    virtual DetectionState checkDetection(Candidate *candidate) const;
+    virtual void onDetection(Candidate *candidate) const;
+    virtual std::string getDescription() const;
 };
 
 /**
@@ -36,13 +36,13 @@ public:
  */
 class Observer: public Module {
 private:
-	std::vector<ref_ptr<ObserverFeature> > features;
-	bool makeInactive;
+    std::vector<ref_ptr<ObserverFeature> > features;
+    bool makeInactive;
 public:
-	Observer(bool makeInactive = true);
-	void add(ObserverFeature *property);
-	void process(Candidate *candidate) const;
-	std::string getDescription() const;
+    Observer(bool makeInactive = true);
+    void add(ObserverFeature *property);
+    void process(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -51,12 +51,12 @@ public:
  */
 class ObserverSmallSphere: public ObserverFeature {
 private:
-	Vector3d center;
-	double radius;
+    Vector3d center;
+    double radius;
 public:
-	ObserverSmallSphere(Vector3d center = Vector3d(0.), double radius = 0);
-	DetectionState checkDetection(Candidate *candidate) const;
-	std::string getDescription() const;
+    ObserverSmallSphere(Vector3d center = Vector3d(0.), double radius = 0);
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -65,12 +65,12 @@ public:
  */
 class ObserverLargeSphere: public ObserverFeature {
 private:
-	Vector3d center;
-	double radius;
+    Vector3d center;
+    double radius;
 public:
-	ObserverLargeSphere(Vector3d center = Vector3d(0.), double radius = 0);
-	DetectionState checkDetection(Candidate *candidate) const;
-	std::string getDescription() const;
+    ObserverLargeSphere(Vector3d center = Vector3d(0.), double radius = 0);
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -79,11 +79,11 @@ public:
  */
 class ObserverRedshiftWindow: public ObserverFeature {
 private:
-	double zmin, zmax;
+    double zmin, zmax;
 public:
-	ObserverRedshiftWindow(double zmin = 0, double zmax = 0.1);
-	DetectionState checkDetection(Candidate *candidate) const;
-	std::string getDescription() const;
+    ObserverRedshiftWindow(double zmin = 0, double zmax = 0.1);
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -94,8 +94,8 @@ public:
  */
 class ObserverPoint: public ObserverFeature {
 public:
-	DetectionState checkDetection(Candidate *candidate) const;
-	std::string getDescription() const;
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -104,8 +104,8 @@ public:
  */
 class ObserverNeutrinoVeto: public ObserverFeature {
 public:
-	DetectionState checkDetection(Candidate *candidate) const;
-	std::string getDescription() const;
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -114,8 +114,8 @@ public:
  */
 class ObserverChargedLeptonVeto: public ObserverFeature {
 public:
-	DetectionState checkDetection(Candidate *candidate) const;
-	std::string getDescription() const;
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -124,8 +124,8 @@ public:
  */
 class ObserverPhotonVeto: public ObserverFeature {
 public:
-	DetectionState checkDetection(Candidate *candidate) const;
-	std::string getDescription() const;
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
 };
 
 /**
@@ -134,11 +134,11 @@ public:
  */
 class ObserverOutput3D: public ObserverFeature {
 private:
-	mutable std::ofstream fout;
+    mutable std::ofstream fout;
 public:
-	ObserverOutput3D(std::string filename);
-	~ObserverOutput3D();
-	void onDetection(Candidate *candidate) const;
+    ObserverOutput3D(std::string filename);
+    ~ObserverOutput3D();
+    void onDetection(Candidate *candidate) const;
 };
 
 /**
@@ -147,11 +147,11 @@ public:
  */
 class ObserverOutput1D: public ObserverFeature {
 private:
-	mutable std::ofstream fout;
+    mutable std::ofstream fout;
 public:
-	ObserverOutput1D(std::string filename);
-	~ObserverOutput1D();
-	void onDetection(Candidate *candidate) const;
+    ObserverOutput1D(std::string filename);
+    ~ObserverOutput1D();
+    void onDetection(Candidate *candidate) const;
 };
 
 // ////////////////////////////////////////////////////////////////////////////////
@@ -159,24 +159,24 @@ public:
 
 // class SmallObserverSphere: public Module {
 // private:
-// 	Vector3d center;
-// 	double radius;
-// 	std::string flag;
-// 	std::string flagValue;
-// 	bool makeInactive;
-// 	double maximumTrajectory;
+//  Vector3d center;
+//  double radius;
+//  std::string flag;
+//  std::string flagValue;
+//  bool makeInactive;
+//  double maximumTrajectory;
 
 // public:
-// 	SmallObserverSphere(Vector3d center = Vector3d(0.), double radius = 0,
-// 			std::string flag = "Detected", std::string flagValue = "",
-// 			bool makeInactive = true);
-// 	void process(Candidate *candidate) const;
-// 	void setCenter(Vector3d center);
-// 	void setRadius(double radius);
-// 	void setFlag(std::string flag, std::string flagValue);
-// 	void setMakeInactive(bool makeInactive);
-// 	void setMaximumTrajectory(double maximumTrajectory);
-// 	std::string getDescription() const;
+//  SmallObserverSphere(Vector3d center = Vector3d(0.), double radius = 0,
+//          std::string flag = "Detected", std::string flagValue = "",
+//          bool makeInactive = true);
+//  void process(Candidate *candidate) const;
+//  void setCenter(Vector3d center);
+//  void setRadius(double radius);
+//  void setFlag(std::string flag, std::string flagValue);
+//  void setMakeInactive(bool makeInactive);
+//  void setMaximumTrajectory(double maximumTrajectory);
+//  std::string getDescription() const;
 // };
 
 // /**
@@ -189,23 +189,23 @@ public:
 //  */
 // class LargeObserverSphere: public Module {
 // private:
-// 	Vector3d center;
-// 	double radius;
-// 	std::string flag;
-// 	std::string flagValue;
-// 	bool makeInactive;
-// 	void updateDescription();
+//  Vector3d center;
+//  double radius;
+//  std::string flag;
+//  std::string flagValue;
+//  bool makeInactive;
+//  void updateDescription();
 
 // public:
-// 	LargeObserverSphere(Vector3d center = Vector3d(0.), double radius = 0,
-// 			std::string flag = "Detected", std::string flagValue = "",
-// 			bool makeInactive = true);
-// 	void process(Candidate *candidate) const;
-// 	void setCenter(Vector3d center);
-// 	void setRadius(double radius);
-// 	void setFlag(std::string flag, std::string flagValue);
-// 	void setMakeInactive(bool makeInactive);
-// 	std::string getDescription() const;
+//  LargeObserverSphere(Vector3d center = Vector3d(0.), double radius = 0,
+//          std::string flag = "Detected", std::string flagValue = "",
+//          bool makeInactive = true);
+//  void process(Candidate *candidate) const;
+//  void setCenter(Vector3d center);
+//  void setRadius(double radius);
+//  void setFlag(std::string flag, std::string flagValue);
+//  void setMakeInactive(bool makeInactive);
+//  std::string getDescription() const;
 // };
 
 // /**
@@ -218,8 +218,8 @@ public:
 //  */
 // class Observer1D: public Module {
 // public:
-// 	Observer1D();
-// 	void process(Candidate *candidate) const;
+//  Observer1D();
+//  void process(Candidate *candidate) const;
 // };
 
 // /**
@@ -231,15 +231,15 @@ public:
 //  */
 // class DetectAll: public Module {
 // private:
-// 	std::string flag;
-// 	std::string flagValue;
-// 	bool makeInactive;
+//  std::string flag;
+//  std::string flagValue;
+//  bool makeInactive;
 
 // public:
-// 	DetectAll(std::string flag = "Detected", std::string flagValue = "",
-// 			bool makeInactive = true);
-// 	void process(Candidate *candidate) const;
-// 	std::string getDescription() const;
+//  DetectAll(std::string flag = "Detected", std::string flagValue = "",
+//          bool makeInactive = true);
+//  void process(Candidate *candidate) const;
+//  std::string getDescription() const;
 // };
 
 } // namespace grpropa
