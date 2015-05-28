@@ -20,55 +20,55 @@ namespace grpropa {
  */
 class TurbulentMagneticField: public MagneticField {
 public:
-	TurbulentMagneticField() :
-			nModes(0), spectralIndex(0), Brms(0), lMin(0), lMax(0) {
-	}
+    TurbulentMagneticField() :
+            nModes(0), spectralIndex(0), Brms(0), lMin(0), lMax(0) {
+    }
 
-	/** Constructor, also initializes the field. */
-	TurbulentMagneticField(double Brms, double lMin, double lMax, double spectralIndex = -11. / 3., int nModes = 1000);
+    /** Constructor, also initializes the field. */
+    TurbulentMagneticField(double Brms, double lMin, double lMax, double spectralIndex = -11. / 3., int nModes = 1000);
 
-	/** Calculates the magnetic field at position from the dialed random turbulent modes */
-	Vector3d getField(const Vector3d &position) const;
+    /** Calculates the magnetic field at position from the dialed random turbulent modes */
+    Vector3d getField(const Vector3d &position) const;
 
-	/**
-	 * Define the properties of the turbulence.
-	 * @param Brms		RMS field strength
-	 * @param lMin		Minimum wavelength of the turbulence
-	 * @param lMax		Maximum wavelength of the turbulence
-	 * @param spectralIndex	Power spectral index turbulence
-	 * @param modes		Number of modes
-	 */
-	void setTurbulenceProperties(double Brms, double lMin, double lMax, double spectralIndex = -11. / 3., int nModes = 1000);
+    /**
+     * Define the properties of the turbulence.
+     * @param Brms      RMS field strength
+     * @param lMin      Minimum wavelength of the turbulence
+     * @param lMax      Maximum wavelength of the turbulence
+     * @param spectralIndex Power spectral index turbulence
+     * @param modes     Number of modes
+     */
+    void setTurbulenceProperties(double Brms, double lMin, double lMax, double spectralIndex = -11. / 3., int nModes = 1000);
 
-	/** Create a random initialization of the turbulent field. */
-	void initialize();
+    /** Create a random initialization of the turbulent field. */
+    void initialize();
 
-	/** Create a random initialization from a given seed. */
-	void initialize(int seed);
+    /** Create a random initialization from a given seed. */
+    void initialize(int seed);
 
-	double getPowerSpectralIndex() const;
-	double getMinimumWavelength() const;
-	double getMaximumWavelength() const;
-	double getRMSFieldStrength() const;
+    double getPowerSpectralIndex() const;
+    double getMinimumWavelength() const;
+    double getMaximumWavelength() const;
+    double getRMSFieldStrength() const;
 
-	/** Return the analytical calculation of the correlation length. */
-	double getCorrelationLength() const;
+    /** Return the analytical calculation of the correlation length. */
+    double getCorrelationLength() const;
 
 private:
-	struct Mode {
-		double amplitude;
-		double phase;
-		Vector3d e1;
-		Vector3d e2;
-		Vector3d k;
-	};
-	std::vector<Mode> modes; /**< List of random turbulent modes */
-	int nModes; /**< Number of modes */
-	double spectralIndex; /**< Power spectral index of the turbulence */
-	double Brms; /**< RMS Field strength */
-	double lMin; /**< Minimum wavelength */
-	double lMax; /**< Maximum wavelength */
-	Random random; /**< Random number generator instance */
+    struct Mode {
+        double amplitude;
+        double phase;
+        Vector3d e1;
+        Vector3d e2;
+        Vector3d k;
+    };
+    std::vector<Mode> modes; /**< List of random turbulent modes */
+    int nModes; /**< Number of modes */
+    double spectralIndex; /**< Power spectral index of the turbulence */
+    double Brms; /**< RMS Field strength */
+    double lMin; /**< Minimum wavelength */
+    double lMax; /**< Maximum wavelength */
+    Random random; /**< Random number generator instance */
 };
 
 } // grpropa

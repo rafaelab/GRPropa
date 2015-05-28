@@ -12,9 +12,9 @@ namespace grpropa {
  */
 class MagneticField: public Referenced {
 public:
-	virtual ~MagneticField() {
-	}
-	virtual Vector3d getField(const Vector3d &position) const = 0;
+    virtual ~MagneticField() {
+    }
+    virtual Vector3d getField(const Vector3d &position) const = 0;
 };
 
 /**
@@ -22,19 +22,19 @@ public:
  @brief Magnetic field decorator implementing periodic fields.
  */
 class PeriodicMagneticField: public MagneticField {
-	ref_ptr<MagneticField> field;
-	Vector3d origin, extends;
-	bool reflective;
+    ref_ptr<MagneticField> field;
+    Vector3d origin, extends;
+    bool reflective;
 public:
-	PeriodicMagneticField(ref_ptr<MagneticField> field, const Vector3d &extends);
-	PeriodicMagneticField(ref_ptr<MagneticField> field, const Vector3d &extends, const Vector3d &origin, bool reflective);
-	Vector3d &getOrigin();
-	void setOrigin(const Vector3d &origin);
-	Vector3d &getExtends();
-	void setExtends(const Vector3d &origin);
-	bool isReflective();
-	void setReflective(bool reflective);
-	Vector3d getField(const Vector3d &position) const;
+    PeriodicMagneticField(ref_ptr<MagneticField> field, const Vector3d &extends);
+    PeriodicMagneticField(ref_ptr<MagneticField> field, const Vector3d &extends, const Vector3d &origin, bool reflective);
+    Vector3d &getOrigin();
+    void setOrigin(const Vector3d &origin);
+    Vector3d &getExtends();
+    void setExtends(const Vector3d &origin);
+    bool isReflective();
+    void setReflective(bool reflective);
+    Vector3d getField(const Vector3d &position) const;
 };
 
 /**
@@ -42,10 +42,10 @@ public:
  @brief Magnetic field decorator implementing a superposition of fields.
  */
 class MagneticFieldList: public MagneticField {
-	std::vector<ref_ptr<MagneticField> > fields;
+    std::vector<ref_ptr<MagneticField> > fields;
 public:
-	void addField(ref_ptr<MagneticField> field);
-	Vector3d getField(const Vector3d &position) const;
+    void addField(ref_ptr<MagneticField> field);
+    Vector3d getField(const Vector3d &position) const;
 };
 
 /**
@@ -53,14 +53,14 @@ public:
  @brief Magnetic field with one B-field vector.
  */
 class UniformMagneticField: public MagneticField {
-	Vector3d value;
+    Vector3d value;
 public:
-	UniformMagneticField(const Vector3d &value) :
-		value(value) {
-	}
-	Vector3d getField(const Vector3d &position) const {
-		return value;
-	}
+    UniformMagneticField(const Vector3d &value) :
+        value(value) {
+    }
+    Vector3d getField(const Vector3d &position) const {
+        return value;
+    }
 };
 
 } // namespace grpropa

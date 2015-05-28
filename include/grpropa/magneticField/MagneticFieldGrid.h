@@ -13,12 +13,12 @@ namespace grpropa {
  This class wraps a VectorGrid to serve as a MagneticField.
  */
 class MagneticFieldGrid: public MagneticField {
-	ref_ptr<VectorGrid> grid;
+    ref_ptr<VectorGrid> grid;
 public:
-	MagneticFieldGrid(ref_ptr<VectorGrid> grid);
-	void setGrid(ref_ptr<VectorGrid> grid);
-	ref_ptr<VectorGrid> getGrid();
-	Vector3d getField(const Vector3d &position) const;
+    MagneticFieldGrid(ref_ptr<VectorGrid> grid);
+    void setGrid(ref_ptr<VectorGrid> grid);
+    ref_ptr<VectorGrid> getGrid();
+    Vector3d getField(const Vector3d &position) const;
 };
 
 /**
@@ -30,18 +30,18 @@ public:
  The VectorGrid and ScalarGrid do not need to share the same origin, spacing or size.
  */
 class ModulatedMagneticFieldGrid: public MagneticField {
-	ref_ptr<VectorGrid> grid;
-	ref_ptr<ScalarGrid> modGrid;
+    ref_ptr<VectorGrid> grid;
+    ref_ptr<ScalarGrid> modGrid;
 public:
-	ModulatedMagneticFieldGrid() {
-	}
-	ModulatedMagneticFieldGrid(ref_ptr<VectorGrid> grid, ref_ptr<ScalarGrid> modGrid);
-	void setGrid(ref_ptr<VectorGrid> grid);
-	void setModulationGrid(ref_ptr<ScalarGrid> modGrid);
-	ref_ptr<VectorGrid> getGrid();
-	ref_ptr<ScalarGrid> getModulationGrid();
-	void setReflective(bool gridReflective, bool modGridReflective);
-	Vector3d getField(const Vector3d &position) const;
+    ModulatedMagneticFieldGrid() {
+    }
+    ModulatedMagneticFieldGrid(ref_ptr<VectorGrid> grid, ref_ptr<ScalarGrid> modGrid);
+    void setGrid(ref_ptr<VectorGrid> grid);
+    void setModulationGrid(ref_ptr<ScalarGrid> modGrid);
+    ref_ptr<VectorGrid> getGrid();
+    ref_ptr<ScalarGrid> getModulationGrid();
+    void setReflective(bool gridReflective, bool modGridReflective);
+    Vector3d getField(const Vector3d &position) const;
 };
 
 } // namespace grpropa

@@ -31,7 +31,7 @@ namespace grpropa {
 class AMRMagneticField: public MagneticField {
 
 private:
-	saga::ref_ptr<saga::MagneticField> field;
+    saga::ref_ptr<saga::MagneticField> field;
     double cfLength;
     double cfDensity;
     double cfMagneticField;
@@ -56,7 +56,7 @@ public:
         #ifdef _OPENMP
             #pragma omp critical 
             {    
-		        b = field->getField(x, y, z);
+                b = field->getField(x, y, z);
             }
         #else 
             b = field->getField(x, y, z);
@@ -66,7 +66,7 @@ public:
             b[i]*=cfMagneticField;
         //std::cout << x*cfLength/Mpc << "  " << y*cfLength/Mpc << "  " << z*cfLength/Mpc << "  ||   " << b[0] << " " << b[1] << "  " << b[0] << std::endl;
 
-		return Vector3d(b[0], b[1], b[2]) * tesla;   
+        return Vector3d(b[0], b[1], b[2]) * tesla;   
     }
 
 };
