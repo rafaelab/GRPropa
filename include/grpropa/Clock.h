@@ -7,16 +7,16 @@ namespace grpropa {
 
 class Clock {
 private:
-	class Impl;
-	Impl *impl;
+    class Impl;
+    Impl *impl;
 public:
-	Clock();
-	virtual ~Clock();
+    Clock();
+    virtual ~Clock();
 
-	void reset();
-	double getSecond();
-	double getMillisecond();
-	static Clock &getInstance();
+    void reset();
+    double getSecond();
+    double getMillisecond();
+    static Clock &getInstance();
 };
 
 } // namespace grpropa
