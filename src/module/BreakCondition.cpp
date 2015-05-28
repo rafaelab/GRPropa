@@ -71,7 +71,7 @@ void MinimumEnergy::process(Candidate *c) const {
 
 std::string MinimumEnergy::getDescription() const {
     std::stringstream s;
-    s << "Minimum energy: " << minEnergy / EeV << " EeV, flag: " << flag;
+    s << "Minimum energy: " << minEnergy / eV << " eV, flag: " << flag;
     return s.str();
 }
 
