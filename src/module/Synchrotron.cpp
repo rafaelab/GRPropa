@@ -14,12 +14,12 @@ Synchrotron::Synchrotron(ref_ptr<MagneticField> field, double Bcr)
 }
 
 void Synchrotron::process(Candidate *c) const {
-	// check if electrons / positrons
-	if (abs(c->current.getId()) != 11 )
-		return;
+    // check if electrons / positrons
+    if (abs(c->current.getId()) != 11 )
+        return;
 
-	double z = c->getRedshift();
-	double E = c->current.getEnergy();
+    double z = c->getRedshift();
+    double E = c->current.getEnergy();
     double gamma = c->current.getLorentzFactor();
     Vector3d pos = c->current.getPosition();
     Vector3d p = c->current.getMomentum();    
@@ -34,7 +34,7 @@ void Synchrotron::process(Candidate *c) const {
     double dE = 1.058e-14 * pow(B * gamma, 2) * (1 - 1 / pow(gamma, 2)); // from Longarir
     dE = dE * c->getCurrentStep();
     dE = std::min(E, dE); // energy loss should not be larger than energy of particle
-	c->current.setEnergy(E * (1 - dE));
+    c->current.setEnergy(E * (1 - dE));
 }
 
 
