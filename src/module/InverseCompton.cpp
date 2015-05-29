@@ -15,6 +15,7 @@ InverseCompton::InverseCompton(PhotonField photonField, double limit, double eth
 }
 
 void InverseCompton::setPhotonField(PhotonField photonField) {
+
     this->photonField = photonField;
     switch (photonField) {
     case CMB:
@@ -26,25 +27,25 @@ void InverseCompton::setPhotonField(PhotonField photonField) {
     case EBL:  // default: Gilmore '12 IRB model
     case EBL_Gilmore12:
         redshiftDependence = true;
-        setDescription("Inverse Compton: Gilmore et al. 2012");
+        setDescription("Inverse Compton: EBL Gilmore et al. 2012");
         initRate(getDataPath("ICS-EBL_Gilmore12.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Gilmore12.txt"));
         break;
     case EBL_Dominguez11:
         redshiftDependence = true;
-        setDescription("Inverse Compton: Dominguez et al. 2011");
+        setDescription("Inverse Compton: EBL Dominguez et al. 2011");
         initRate(getDataPath("ICS-EBL_Dominguez11.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11.txt"));
         break;
     case EBL_Dominguez11_UL:
         redshiftDependence = true;
-        setDescription("Inverse Compton: Dominguez et al. 2011 (upper limit)");
+        setDescription("Inverse Compton: EBL Dominguez et al. 2011 (upper limit)");
         initRate(getDataPath("ICS-EBL_Dominguez11_upper.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_upper.txt"));
         break;
     case EBL_Dominguez11_LL:
         redshiftDependence = true;
-        setDescription("Inverse Compton: Dominguez et al. 2011 (lower limit)");
+        setDescription("Inverse Compton: EBL Dominguez et al. 2011 (lower limit)");
         initRate(getDataPath("ICS-EBL_Dominguez11_lower.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_lower.txt"));
         break;
@@ -257,7 +258,6 @@ void InverseCompton::initTableBackgroundEnergy(std::string filename) {
         // for (int i=0; i<tabProb.size(); i++) std::cout << tabProb[i] << std::endl;
         // for (int i=0; i<tabRedshift.size(); i++) std::cout << tabRedshift[i] << std::endl;
     } // conditional: redshift dependent
-}
 }
 
 double InverseCompton::energyFraction(double E, double z) const {
