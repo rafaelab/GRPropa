@@ -27,10 +27,11 @@ private:
     std::vector<double> tabProb; /* cumulative probability for background photon. */
 
     double limit; /* fraction of energy loss length to limit the next step */
+    double nMaxIterations; /* maximum number of attempts to sample s in energy fraction */
     bool redshiftDependence;
     
 public:
-    PairProduction(PhotonField photonField = CMB, double limit = 0.1);
+    PairProduction(PhotonField photonField = CMB, double limit = 0.1, double nMaxIterations = 100);
 
     void setPhotonField(PhotonField photonField);
     void setLimit(double limit);

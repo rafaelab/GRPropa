@@ -8,9 +8,10 @@
 
 namespace grpropa {
 
-PairProduction::PairProduction(PhotonField photonField, double limit) {
+PairProduction::PairProduction(PhotonField photonField, double limit, double nMaxIterations) {
     setPhotonField(photonField);
     this->limit = limit;
+    this->nMaxIterations = nMaxIterations;
 }
 
 void PairProduction::setPhotonField(PhotonField photonField) {
@@ -18,7 +19,7 @@ void PairProduction::setPhotonField(PhotonField photonField) {
     switch (photonField) {
     case CMB:
         redshiftDependence = false;
-        setDescription("PairProduction: CMB");
+        setDescription("Pair Production: CMB");
         initRate(getDataPath("PP-CMB.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-CMB.txt"));
         break;
@@ -185,7 +186,6 @@ void PairProduction::initRate(std::string filename) {
 
 void PairProduction::initTableBackgroundEnergy(std::string filename) {
 
- 
     if (redshiftDependence == false) {
         std::ifstream infile(filename.c_str());
         if (!infile.good())
@@ -267,42 +267,46 @@ double PairProduction::energyFraction(double E, double z) const {
     */
     Random &random = Random::instance();
 
-    // for (int i=0; i<tabProb.size(); i++) std::cout << tabProb[i] << std::endl;
-    // std::cout << "test: " << interpolate2d(z, 0.5, tabRedshift, tabProb, tabPhotonEnergy) / eV << std::endl;
-
-    double e;
-    line: if (redshiftDependence == true) {
-        e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
-        // std::cout << z << "    " << rnd << "    " << e / eV << std::endl;
-     } else {
-        e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
-        // std::cout << z << "    " << rnd << "    " << e / eV << std::endl;
+    double s = 0;
+    int errCounter = 0;
+    int nMaxIterations = this->nMaxIterations;
+    do {
+        if (errCounter >= nMaxIterations) {
+            if (E > 4 * pow(mass_electron * c_squared, 2))
+                return 0.5;
+            else
+                return -1;
+        }
+        double e;    
+        if (redshiftDependence == true)
+            e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
+        else
+            e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
+        
+        // kinematics
+        double mu = random.randUniform(-1, 1);  
+        s = centerOfMassEnergy2(E, e, mu);
+        errCounter++;
+    } while ( s < 4 * pow(mass_electron * c_squared, 2));
+    
+    double beta = sqrt(1 - 4 * pow(mass_electron * c_squared, 2) / s);
+    double ymin = (1 - beta) / 2;
+    double y = 0;
+    while(true) {
+        y = 0.5 * pow(2 * ymin, random.rand());
+        double pf = 1 / (1 + 2 * beta * beta * (1 - beta * beta));
+        double f1 = y * y / (1 - y);
+        double f2 = 1 - y + (1 - beta * beta) / (1 - y);
+        double f3 = pow(1 - beta * beta, 2) / (4. * y * pow(1 - y, 2) );
+        double gb = pf * (f1 + f2 - f3);
+        if (random.rand() < gb)
+            break;
     }
+    if (random.rand() > 0.5) 
+        y = 1 - y;
 
-    // kinematics
-    double mu = random.randUniform(-1, 1);  
-    double s = 2 * E * e * (1 - mu);
-    // std::cout << 1 - 4 * pow(mass_electron * c_squared, 2) / s << " " << mu << " " << e/eV << " " << E/eV << std::endl;
-    if ( 4 * pow(mass_electron * c_squared, 2) < s ) {
-        double beta = sqrt(1 - 4 * pow(mass_electron * c_squared, 2) / s);
-        double ymin = (1 - beta) / 2;
-        double y = 0;
-        double r = random.rand();
-        double gb = 0;
-        do {
-            y = 0.5 * pow(2 * ymin, random.rand());
-            double pf = 1 / (1 + 2 * beta * beta * (1 - beta * beta));
-            double f1 = y * y / (1 - y);
-            double f2 = 1 - y + (1 - beta * beta) / (1 - y);
-            double f3 = pow(1 - beta * beta, 2) / (4. * y * pow(1 - y, 2) );
-            double gb = pf * (f1 + f2 - f3);
-            // std::cout << mu << " " << y << " " << pf << " " << f1 << " " << f2 << " " << f3 << std::endl;
-        } while(r < gb);
-        if (random.rand() > 0.5) 
-            y = 1 - y;
-        return y;
-    } else 
-        return 0; 
+    return y;
+
 }
 
 double PairProduction::centerOfMassEnergy2(double E, double e, double mu) const {
@@ -327,11 +331,10 @@ double PairProduction::lossLength(int id, double en, double z) const {
             rate = tabRate.back() * pow(en / tabEnergy.back(), -0.6); // extrapolation
         rate *= pow(1 + z, 3);  
     } else {
-        if (en < tabEnergy.back()) {
+        if (en < tabEnergy.back())
             rate = interpolate2d(z, en, tabRedshift, tabEnergy, tabRate); // interpolation
-        } else {
+        else
             rate = tabRate.back() * pow(en / tabEnergy.back(), -0.6); // extrapolation
-        }
     }
 
     return 1. / rate;
@@ -372,18 +375,11 @@ void PairProduction::performInteraction(Candidate *candidate) const {
     double en = candidate->current.getEnergy();
     double z = candidate->getRedshift();
     double y = energyFraction(en, z);
-    candidate->setActive(false);
-    if (y > 0 && y < 1) {
+    if (y != -1){
+        candidate->setActive(false);
         candidate->addSecondary(11, en * y);
         candidate->addSecondary(-11, en * (1 - y));
     }
-    // } else { 
-    //     // Fixes bug of y=0. Problem should be understood.
-    //     // This occurs to a very small fraction of events, so this workaround 
-    //     // doesn't affect significantly the results.
-    //     candidate->addSecondary(11, en * .5);
-    //     candidate->addSecondary(-11, en * .5);
-    // }
 }
 
 } // namespace grpropa
