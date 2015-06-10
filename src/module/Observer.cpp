@@ -215,20 +215,20 @@ void ObserverOutput3D::onDetection(Candidate *candidate) const {
     Vector3d xi = candidate->source.getPosition();
     Vector3d xf = candidate->current.getPosition();
     double dt = (xf - xi).getR() / c_light;
-    p += sprintf(buffer + p, "%.9e\t", dt);
+    p += sprintf(buffer + p, "%5.4e\t", dt);
     p += sprintf(buffer + p, "%10i\t", candidate->current.getId());
     p += sprintf(buffer + p, "%10i\t", candidate->source.getId());
     p += sprintf(buffer + p, "%4.4e\t", candidate->current.getEnergy() / eV);
     p += sprintf(buffer + p, "%4.4e\t", candidate->source.getEnergy() / eV);
     Vector3d pos = candidate->current.getPosition() / Mpc;
-    p += sprintf(buffer + p, "%7.6e\t%7.6e\t%7.6e\t", pos.x, pos.y, pos.z);
+    p += sprintf(buffer + p, "%6.5e\t%6.5e\t%6.5e\t", pos.x, pos.y, pos.z);
     Vector3d ipos = candidate->source.getPosition() / Mpc;
-    p += sprintf(buffer + p, "%7.6e\t%7.6e\t%7.6e\t", ipos.x, ipos.y, ipos.z);
+    p += sprintf(buffer + p, "%6.5e\t%6.5e\t%6.5e\t", ipos.x, ipos.y, ipos.z);
     Vector3d dir = candidate->current.getDirection();
-    p += sprintf(buffer + p, "%.8e\t%.8e\t%.8e\t", dir.x, dir.y, dir.z);
+    p += sprintf(buffer + p, "%6.5e\t%6.5e\t%6.5e\t", dir.x, dir.y, dir.z);
     Vector3d idir = candidate->source.getDirection();
-    p += sprintf(buffer + p, "%.8e\t%.8e\t%.8e\t", idir.x, idir.y, idir.z);
-    p += sprintf(buffer + p, "%.9e\n", candidate->getRedshift());
+    p += sprintf(buffer + p, "%6.5e\t%6.5e\t%6.5e\t", idir.x, idir.y, idir.z);
+    p += sprintf(buffer + p, "%8.7e\n", candidate->getRedshift());
 
 
 #pragma omp critical
