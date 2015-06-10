@@ -24,11 +24,14 @@ class InverseCompton: public Module {
 private:
     PhotonField photonField;
 
-    std::vector<double> tabRate; /*< tabulated interaction rate in [1/m] for protons at z = 0 */
-    std::vector<double> tabEnergy; /*< tabulated energy */
-    std::vector<double> tabPhotonEnergy; /*< background photon energy */
-    std::vector<double> tabProb; /*< cumulative probability for background photon (for MC). */
-    double limit; /*< fraction of energy loss length to limit the next step */
+    std::vector<double> tabEnergy; /* tabulated energy [eV] */
+    std::vector<double> tabRate; /* tabulated rate [1/Mpc] */
+    std::vector<double> tabRedshift; /* tabulated redshifts for z dependence of the IRB */
+    std::vector<double> tabPhotonEnergy; /* background photon energy*/
+    std::vector<double> tabProb; /* cumulative probability for background photon. */
+
+    double limit; /* fraction of energy loss length to limit the next step */
+    bool redshiftDependence;
     double Ethr;  /*< energy loss due to the emission of soft photons for E<Ethr */
 
 public:
