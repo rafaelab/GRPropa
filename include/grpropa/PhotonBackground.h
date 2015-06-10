@@ -4,7 +4,7 @@
 namespace grpropa {
 
 // Photon fields
-// The default IRB model is that of Finke et al. 2010
+// The default IRB model is that of Gilmore et al. 2012
 enum PhotonField {
   CMB, 
   EBL, EBL_Finke10, EBL_Kneiske10, EBL_Franceschini08, EBL_Gilmore12, EBL_Dominguez11, EBL_Dominguez11_UL, EBL_Dominguez11_LL, 
