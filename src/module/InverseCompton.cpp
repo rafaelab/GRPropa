@@ -288,15 +288,18 @@ double InverseCompton::energyFraction(double E, double z) const {
     double r = random.rand();
     double gb = 0;
     do {
-        y = ymin * pow(ymax / ymin,r);
-        double f1 = (1 + y*y) / 2;
+        y = ymin * pow(ymax / ymin, r);
+        double f1 = (1 + y * y) / 2;
         double f2 = 2 * ymin * (y - ymin) * (1 - y) / (y * pow(1 - ymin, 2));
         double gb = (f1 - f2);
         if (random.rand() < gb)
             break;
     } while(r < gb);
     //std::cout << s / pow(eV,2) << " " << ymin << " " << 1-y << " " << e/eV << " " << E/eV << std::endl;
-    return y;
+    if (y > 0 && y < 1)
+        return y;
+    else
+        return -1;
 }
 
 double InverseCompton::energyLossBelowThreshold(double E, double z, double step) const {
@@ -392,11 +395,11 @@ void InverseCompton::performInteraction(Candidate *candidate) const {
     double en = candidate->current.getEnergy();
     double z = candidate->getRedshift();
     double y = energyFraction(en, z);
-    candidate->current.setEnergy(en * y);
-    candidate->setActive(false);
-    candidate->addSecondary(22, en * (1 - y));
-    //std::cout << "22\t" << en/eV << "\t" << y << std::endl;
-
+    if (y > 0 && y < 1) {
+        candidate->current.setEnergy(en * y);
+        candidate->setActive(false);
+        candidate->addSecondary(22, en * (1 - y));
+    }
 }
 
 
