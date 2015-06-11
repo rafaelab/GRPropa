@@ -282,7 +282,7 @@ double PairProduction::energyFraction(double E, double z) const {
             e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
         else
             e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
-        
+
         // kinematics
         double mu = random.randUniform(-1, 1);  
         s = centerOfMassEnergy2(E, e, mu);
@@ -375,10 +375,11 @@ void PairProduction::performInteraction(Candidate *candidate) const {
     double en = candidate->current.getEnergy();
     double z = candidate->getRedshift();
     double y = energyFraction(en, z);
-    if (y != -1){
-        candidate->setActive(false);
+    candidate->setActive(false);
+    if (y > 0 && y < 1){
         candidate->addSecondary(11, en * y);
         candidate->addSecondary(-11, en * (1 - y));
+        // std::cout << y << std::endl;
     }
 }
 
