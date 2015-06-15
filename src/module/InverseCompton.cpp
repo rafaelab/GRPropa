@@ -397,7 +397,7 @@ void InverseCompton::performInteraction(Candidate *candidate) const {
     double y = energyFraction(en, z);
     if (y > 0 && y < 1) {
         candidate->current.setEnergy(en * y);
-        candidate->setActive(false);
+        candidate->setActive(true);
         candidate->addSecondary(22, en * (1 - y));
     }
 }
