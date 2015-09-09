@@ -1,5 +1,6 @@
 #include "grpropa/GridTools.h"
 #include "grpropa/Random.h"
+#include "grpropa/Units.h"
 
 #include <fstream>
 #include <sstream>
@@ -135,10 +136,6 @@ void initTurbulence(ref_ptr<VectorGrid> grid, double Brms, double lMin, double l
     Vector3f ek, e1, e2; // orthogonal base
     Vector3f n0(1, 1, 1); // arbitrary vector to construct orthogonal base
 
-
-    // test
-    std::ofstream outputFile("test.txt");
-
     for (size_t ix = 0; ix < n; ix++) {
         for (size_t iy = 0; iy < n; iy++) {
             for (size_t iz = 0; iz < n2; iz++) {
@@ -155,9 +152,6 @@ void initTurbulence(ref_ptr<VectorGrid> grid, double Brms, double lMin, double l
                     Bky[i][1] = 0;
                     Bkz[i][0] = 0;
                     Bkz[i][1] = 0;
-                    if (helicity == true) {
-                        outputFile << std::setprecision(9) << Bkx[i][0] << " " << Bkx[i][1] << " " << Bky[i][0] << " " << Bky[i][1] << " " << Bkz[i][0] << " " << Bkz[i][1] << std::endl;
-                    }
                     continue;
                 }
 
@@ -176,9 +170,10 @@ void initTurbulence(ref_ptr<VectorGrid> grid, double Brms, double lMin, double l
                     e2 /= e2.getR();
 
 
+                    double Bkprefactor = mu0_vacPerm / (4 * M_PI * pow(k, 3));
                     Bktot = fabs(random.randNorm() * pow(k, alpha / 2));
-                    Bkplus  = sqrt((1 + H) / 2) * Bktot;
-                    Bkminus = sqrt((1 - H) / 2) * Bktot;
+                    Bkplus  = Bkprefactor * sqrt((1 + H) / 2) * Bktot;
+                    Bkminus = Bkprefactor * sqrt((1 - H) / 2) * Bktot;
                     thetaplus = 2 * M_PI * random.rand();
                     thetaminus = 2 * M_PI * random.rand();
                     double ctp = cos(thetaplus);
@@ -193,12 +188,8 @@ void initTurbulence(ref_ptr<VectorGrid> grid, double Brms, double lMin, double l
                     Bkz[i][0] = ((Bkplus * ctp + Bkminus * ctm) * e1.z + (-Bkplus * stp + Bkminus * stm) * e2.z) / sqrt(2);
                     Bkz[i][1] = ((Bkplus * stp + Bkminus * stm) * e1.z + ( Bkplus * ctp - Bkminus * ctm) * e2.z) / sqrt(2);
                     
-
                     Vector3f BkRe(Bkx[i][0], Bky[i][0], Bkz[i][0]);
                     Vector3f BkIm(Bkx[i][1], Bky[i][1], Bkz[i][1]);
-                    // std::cout << i << " " << ek.getAngleTo(BkRe) * 180 / M_PI << " " << ek.getAngleTo(BkIm) * 180 / M_PI << std::endl;
-
-                    outputFile << std::setprecision(9) << Bkx[i][0] << " " << Bkx[i][1] << " " << Bky[i][0] << " " << Bky[i][1] << " " << Bkz[i][0] << " " << Bkz[i][1] << std::endl;
 
                 } else { // no helicity
                     if (ek.isParallelTo(n0, float(1e-3))) {
@@ -232,14 +223,11 @@ void initTurbulence(ref_ptr<VectorGrid> grid, double Brms, double lMin, double l
                     Bkz[i][0] = b.z * cosPhase;
                     Bkz[i][1] = b.z * sinPhase;
 
-                    outputFile << std::setprecision(9) << Bkx[i][0] << " " << Bkx[i][1] << " " << Bky[i][0] << " " << Bky[i][1] << " " << Bkz[i][0] << " " << Bkz[i][1] << std::endl;
                 } // non helical case
             } // for iz
         } // for iy
     } // for ix
 
-    // test
-    outputFile.close();
 
     // in-place, complex to real, inverse Fourier transformation on each component
     // note that the last elements of B(x) are unused now
