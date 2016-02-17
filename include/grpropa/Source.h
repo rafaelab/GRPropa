@@ -34,6 +34,21 @@ public:
 /**
  @class Source
  @brief General cosmic ray source
+ This class is a container for source features.
+ The source prepares a new candidate by passing it to all its source features
+ to be modified accordingly.
+ */
+class Source: public SourceInterface {
+    std::vector<ref_ptr<SourceFeature> > features;
+public:
+    void add(SourceFeature* feature);
+    ref_ptr<Candidate> getCandidate() const;
+    std::string getDescription() const;
+};
+
+/**
+ @class Source
+ @brief General cosmic ray source
 
  This class is a container for source features.
  The source prepares a new candidate by passing it to all its source features
