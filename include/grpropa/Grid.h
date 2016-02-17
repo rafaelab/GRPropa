@@ -117,12 +117,12 @@ public:
         return reflective;
     }
 
-    /** Accessor / Mutator */
+    /** Inspector / Mutator */
     T &get(size_t ix, size_t iy, size_t iz) {
         return grid[ix * Ny * Nz + iy * Nz + iz];
     }
 
-    /** Accessor */
+    /** Inspector */
     const T &get(size_t ix, size_t iy, size_t iz) const {
         return grid[ix * Ny * Nz + iy * Nz + iz];
     }
