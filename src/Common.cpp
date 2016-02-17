@@ -66,7 +66,6 @@ double interpolate(double x, const std::vector<double> &X, const std::vector<dou
     return Y[i] + (x - X[i]) * (Y[i + 1] - Y[i]) / (X[i + 1] - X[i]);
 }
 
-
 double interpolate2d(double x, double y, const std::vector<double> &X, const std::vector<double> &Y, const std::vector<double> &Z) {
 
     std::vector<double>::const_iterator itx = std::upper_bound(X.begin(), X.end(), x); // redshift
@@ -76,7 +75,7 @@ double interpolate2d(double x, double y, const std::vector<double> &X, const std
 
     if (x >= X.back() || x <  X.front()) 
         return 0;
-    if (y >= Y.back() || y <= Y.front())
+    if (y >= Y.back() || y < Y.front())
         return 0;
 
     if (itx == X.begin() && ity == Y.begin())
@@ -103,11 +102,7 @@ double interpolate2d(double x, double y, const std::vector<double> &X, const std
     // std::cout << Q11 << " " << Q12 << " " << Q21 << " " << Q22 << " " << R1 << " " << R2 << std::endl;
 
     return res;
-
-    
 }
-
-
 
 double interpolateEquidistant(double x, double lo, double hi, const std::vector<double> &Y) {
     if (x <= lo)
