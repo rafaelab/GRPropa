@@ -30,25 +30,25 @@ void PairProduction::setPhotonField(PhotonField photonField) {
         initRate(getDataPath("PP-EBL_Gilmore12.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Gilmore12.txt"));
         break;
-    case EBL_Dominguez11:
+    case EBL_Dominguez11: // not working
         redshiftDependence = true;
         setDescription("Pair Production: EBL Dominguez et al. 2011");
         // initRate(getDataPath("PP-EBL_Dominguez11.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11.txt"));
         break;
-    case EBL_Dominguez11_UL:
+    case EBL_Dominguez11_UL: // not working
         redshiftDependence = true;
         setDescription("Pair Production: EBL Dominguez et al. 2011 (upper limit)");
         // initRate(getDataPath("PP-EBL_Dominguez11_upper.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_upper.txt"));
         break;
-    case EBL_Dominguez11_LL:
+    case EBL_Dominguez11_LL: // not working
         redshiftDependence = true;
         setDescription("Pair Production: EBL Dominguez et al. 2011 (lower limit)");
         initRate(getDataPath("PP-EBL_Dominguez11_lower.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_lower.txt"));
         break;
-    case EBL_Finke10:
+    case EBL_Finke10: // not working?
         redshiftDependence = true;
         setDescription("Pair Production: EBL Finke et al. 2010");
         initRate(getDataPath("PP-EBL_Finke10.txt"));
@@ -248,10 +248,6 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
         infile.close();
         tabProb.resize(nl);
 
-        // test
-        // for (int i=0; i<tabPhotonEnergy.size(); i++) std::cout << tabPhotonEnergy[i] / eV << std::endl;
-        // for (int i=0; i<tabProb.size(); i++) std::cout << tabProb[i] << std::endl;
-        // for (int i=0; i<tabRedshift.size(); i++) std::cout << tabRedshift[i] << std::endl;
     } // conditional: redshift dependent
 }
 
@@ -318,7 +314,7 @@ double PairProduction::centerOfMassEnergy2(double E, double e, double mu) const 
 double PairProduction::lossLength(int id, double en, double z) const {
     
     if (id != 22)
-        return std::numeric_limits<double>::max(); // no pair production on uncharged particles
+        return std::numeric_limits<double>::max(); // no pair production by other particles
 
     if (en < tabEnergy.front())
         return std::numeric_limits<double>::max(); // below energy threshold
@@ -380,7 +376,6 @@ void PairProduction::performInteraction(Candidate *candidate) const {
     if (y > 0 && y < 1){
         candidate->addSecondary(11, en * y);
         candidate->addSecondary(-11, en * (1 - y));
-        // std::cout << y << std::endl;
     }
 }
 
