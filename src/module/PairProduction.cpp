@@ -246,6 +246,7 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
             }
         }
         infile.close();
+        tabProb.resize(nl);
 
         // test
         // for (int i=0; i<tabPhotonEnergy.size(); i++) std::cout << tabPhotonEnergy[i] / eV << std::endl;

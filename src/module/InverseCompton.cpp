@@ -30,6 +30,8 @@ void InverseCompton::setPhotonField(PhotonField photonField) {
         setDescription("Inverse Compton: EBL Gilmore et al. 2012");
         initRate(getDataPath("ICS-EBL_Gilmore12.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Gilmore12.txt"));
+        // initRate("/Users/rafaelab/Softwares/GRPropa/data/ICS-EBL_Gilmore12.txt");
+        // initTableBackgroundEnergy("/Users/rafaelab/Softwares/GRPropa/data/photonProbabilities-EBL_Gilmore12.txt");
         break;
     case EBL_Dominguez11:
         redshiftDependence = true;
@@ -85,7 +87,6 @@ void InverseCompton::setPhotonField(PhotonField photonField) {
     }
 }
 
-
 void InverseCompton::setLimit(double limit) {
     this->limit = limit;
 }
@@ -99,7 +100,7 @@ void InverseCompton::initRate(std::string filename) {
     if (redshiftDependence == false) {
         std::ifstream infile(filename.c_str());
         if (!infile.good())
-            throw std::runtime_error("PairProduction: could not open file " + filename);
+            throw std::runtime_error("Inverse Compton scattering: could not open file " + filename);
    
         // clear previously loaded interaction rates
         tabEnergy.clear();
@@ -118,6 +119,7 @@ void InverseCompton::initRate(std::string filename) {
         }
         infile.close();
     } else { // Rates for EBL
+
         std::ifstream infile(filename.c_str());
         if (!infile.good())
             throw std::runtime_error("PairProduction: could not open file " + filename);
@@ -187,8 +189,7 @@ void InverseCompton::initRate(std::string filename) {
     } // conditional: redshift dependent
 
     // for (int i=0; i<tabRate.size(); i++) std::cout << tabRate[i] * Mpc << std::endl;
-    // for (int i=0; i<tabEnergy.size(); i++) std::cout << tabEnergy[i] /eV << std::endl;
-    
+    // for (int i=0; i<tabEnergy.size(); i++) std::cout << tabEnergy[i] /eV << std::endl;  
 }
 
 void InverseCompton::initTableBackgroundEnergy(std::string filename) {
@@ -252,6 +253,7 @@ void InverseCompton::initTableBackgroundEnergy(std::string filename) {
             }
         }
         infile.close();
+        tabProb.resize(nl);
 
         // test
         // for (int i=0; i<tabPhotonEnergy.size(); i++) std::cout << tabPhotonEnergy[i] / eV << std::endl;
@@ -331,7 +333,6 @@ double InverseCompton::centerOfMassEnergy2(double E, double e, double mu) const 
     return pow(mass_electron*c_squared, 2) + 2 * E * e * (1 - beta * mu);
 }
 
-
 double InverseCompton::lossLength(int id, double en, double z) const {
 
     en *= (1 + z);
@@ -363,7 +364,7 @@ void InverseCompton::process(Candidate *c) const {
     //if (E > Ethr) {
     do {
         //double rate = interpolate(E, tabEnergy, tabRate);
-        double rate = 1/ lossLength(id, E / (1 + z), z);
+        double rate = 1 / lossLength(id, E / (1 + z), z);
         // cosmological scaling, rate per comoving distance)
         rate *= pow(1 + z, 2);
 
