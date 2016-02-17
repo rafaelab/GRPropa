@@ -16,7 +16,7 @@ class SourceFeature: public Referenced {
 protected:
     std::string description;
 public:
-    virtual void prepareParticle(ParticleState& particle) const;
+    virtual void prepareParticle(ParticleState& particle) const {};
     virtual void prepareCandidate(Candidate& candidate) const;
     std::string getDescription() const;
 };
@@ -47,34 +47,18 @@ public:
 };
 
 /**
- @class Source
- @brief General cosmic ray source
-
- This class is a container for source features.
- The source prepares a new candidate by passing it to all its source features
- to be modified accordingly.
- */
-class Source: public Referenced {
-    std::vector<ref_ptr<SourceFeature> > features;
-public:
-    void add(SourceFeature* feature);
-    ref_ptr<Candidate> getCandidate() const;
-    std::string getDescription() const;
-};
-
-/**
  @class SourceList
  @brief List of cosmic ray sources of individual lumosities.
-
  The SourceList is a source itself. It can be used if several sources are
  needed in one simulation.
  */
-class SourceList: public Source {
+class SourceList: public SourceInterface {
     std::vector<ref_ptr<Source> > sources;
     std::vector<double> cdf;
 public:
     void add(Source* source, double weight = 1);
     ref_ptr<Candidate> getCandidate() const;
+    std::string getDescription() const;
 };
 
 /**
@@ -202,7 +186,6 @@ public:
 /**
  @class SourceUniform1D
  @brief 1D-Positions from a uniform source distribution in an expanding universe
-
  This source property sets random x-coordinates according to a uniform source
  distribution in a given comoving distance interval.
  This is done by drawing a light travel distance from a flat distribution and
@@ -297,7 +280,7 @@ public:
 
 /**
  @class SourceUniformRedshift
- @brief Uniform redshift distribution (time of emission)
+ @brief Random redshift (time of emission) from uniform distribution
  */
 class SourceUniformRedshift: public SourceFeature {
     double zmin, zmax;
@@ -308,9 +291,19 @@ public:
 };
 
 /**
+ @class SourceRedshiftEvolution
+ @brief Random redshift (time of emission) from (1+z)^m distribution
+ */
+class SourceRedshiftEvolution: public SourceFeature {
+    double zmin, zmax, m;
+public:
+    SourceRedshiftEvolution(double m, double zmin, double zmax);
+    void prepareCandidate(Candidate &candidate) const;
+};
+
+/**
  @class SourceRedshift1D
  @brief Redshift according to the distance to 0
-
  This source property sets the redshift according to the distance to 0.
  It must be added after a position setting source property.
  */
