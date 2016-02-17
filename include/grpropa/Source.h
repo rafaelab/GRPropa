@@ -22,6 +22,16 @@ public:
 };
 
 /**
+ @class SourceInterface
+ @brief Abstract base class for cosmic ray sources
+ */
+class SourceInterface : public Referenced {
+public:
+    virtual ref_ptr<Candidate> getCandidate() const = 0;
+    virtual std::string getDescription() const = 0;
+};
+
+/**
  @class Source
  @brief General cosmic ray source
 
