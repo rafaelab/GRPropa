@@ -8,9 +8,9 @@ namespace grpropa {
 
 /**
  @class SimplePropagation
- @brief Simple rectalinear propagation in absence of magnetic fields.
+ @brief Simple rectlinear propagation in absence of magnetic fields.
 
- This module performs a rectalinear propagation.
+ This module performs a rectlinear propagation.
  The step size is guaranteed to be larger than minStep and smaller than maxStep.
  It always proposes a next step size of maxStep.
  */
