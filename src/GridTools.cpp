@@ -1,3 +1,4 @@
+#include "grpropa/Common.h"
 #include "grpropa/GridTools.h"
 #include "grpropa/Random.h"
 #include "grpropa/Units.h"
@@ -85,7 +86,6 @@ double rmsFieldStrength(ref_ptr<ScalarGrid> grid) {
 
 #ifdef GRPROPA_HAVE_FFTW3F
 #include "fftw3.h"
-
 void initTurbulence(ref_ptr<VectorGrid> grid, double Brms, double lMin, double lMax, double alpha, int seed, bool helicity, double H) {
     size_t Nx = grid->getNx();
     size_t Ny = grid->getNy();
@@ -266,6 +266,7 @@ void initTurbulence(ref_ptr<VectorGrid> grid, double Brms, double lMin, double l
     scaleGrid(grid, Brms / rmsFieldStrength(grid)); // normalize to Brms
 }
 #endif // GRPROPA_HAVE_FFTW3F
+
 
 double turbulentCorrelationLength(double lMin, double lMax, double alpha) {
     double r = lMin / lMax;
