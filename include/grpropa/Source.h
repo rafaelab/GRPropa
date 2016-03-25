@@ -74,20 +74,6 @@ public:
 };
 
 /**
- @class SourceMultipleParticleTypes
- @brief Multiple particle types with individual relative abundances
- */
-class SourceMultipleParticleTypes: public SourceFeature {
-    std::vector<int> particleTypes;
-    std::vector<double> cdf;
-public:
-    SourceMultipleParticleTypes();
-    void add(int id, double weight = 1);
-    void prepareParticle(ParticleState &particle) const;
-    void setDescription();
-};
-
-/**
  @class SourceEnergy
  @brief Sets the initial energy to a given value
  */

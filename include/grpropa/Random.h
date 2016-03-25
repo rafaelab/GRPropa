@@ -100,9 +100,9 @@ protected:
 //Methods
 public:
     /// initialize with a simple uint32
-    Random( const uint32& oneSeed );
+    Random(const uint32& oneSeed);
     // initialize with an array
-    Random( uint32 *const bigSeed, uint32 const seedLength = N );
+    Random(uint32 *const bigSeed, uint32 const seedLength = N);
     /// auto-initialize with /dev/urandom or time() and clock()
     /// Do NOT use for CRYPTOGRAPHY without securely hashing several returned
     /// values together, otherwise the generator state can be learned after
@@ -110,15 +110,19 @@ public:
     Random();
     // Access to 32-bit random numbers
     double rand();///< real number in [0,1]
-    double rand( const double& n );///< real number in [0,n]
+    double rand(const double& n);///< real number in [0,n]
     double randExc();///< real number in [0,1)
     double randExc( const double& n );///< real number in [0,n)
     double randDblExc();///< real number in (0,1)
-    double randDblExc( const double& n );///< real number in (0,n)
+    double randDblExc(const double& n);///< real number in (0,n)
     /// Pull a 32-bit integer from the generator state
     /// Every other access function simply transforms the numbers extracted here
     uint32 randInt();///< integer in [0,2^32-1]
     uint32 randInt( const uint32& n );///< integer in [0,n] for n < 2^32
+
+    uint64_t randInt64(); ///< integer in [0, 2**64 -1]. PROBABLY NOT SECURE TO USE
+    uint64_t randInt64(const uint64_t &n); ///< integer in [0, n] for n < 2**64 -1. PROBABLY NOT SECURE TO USE
+ 
     double operator()() {return rand();} ///< same as rand()
 
     /// Access to 53-bit random numbers (capacity of IEEE double precision)
@@ -126,7 +130,7 @@ public:
     ///Exponential distribution in (0,inf)
     double randExponential();
     /// Normal distributed random number
-    double randNorm( const double& mean = 0.0, const double& variance = 1.0 );
+    double randNorm(const double& mean = 0.0, const double& variance = 1.0);
     /// Uniform distribution in [min, max]
     double randUniform(double min, double max);
     /// Rayleigh distributed random number  
@@ -134,7 +138,7 @@ public:
     /// Fisher distributed random number
     double randFisher(double k);
 
-    /// Draw a random bin from a (unnormalized) cumulative distribution function
+    /// Draw a random bin from a (unnormalized) cumulative distribution function, without leading zero. 
     size_t randBin(const std::vector<float> &cdf);
     size_t randBin(const std::vector<double> &cdf);
 
@@ -146,6 +150,8 @@ public:
     Vector3d randFisherVector(const Vector3d &meanDirection, double kappa);
     /// Uniform distributed random vector inside a cone
     Vector3d randConeVector(const Vector3d &meanDirection, double angularRadius);
+    ///_Position vector uniformly distributed within propagation step size bin
+    Vector3d randomInterpolatedPosition(const Vector3d &a, const Vector3d &b);
 
     /// Power-law distribution of a given differential spectral index
     double randPowerLaw(double index, double min, double max);
@@ -205,8 +211,8 @@ protected:
     /// Better than uint32(x) in case x is floating point in [0,1]
     /// Based on code by Lawrence Kirby (fred@genesis.demon.co.uk)
     static uint32 hash( time_t t, clock_t c );
-};
 
+};
 } //namespace grpropa
 
 #endif  // RANDOM_H

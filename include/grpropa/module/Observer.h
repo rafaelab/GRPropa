@@ -35,13 +35,30 @@ public:
  @brief General cosmic ray observer
  */
 class Observer: public Module {
+    std::string flagKey;
+    std::string flagValue;
 private:
     std::vector<ref_ptr<ObserverFeature> > features;
+    ref_ptr<Module> detectionAction;
+    bool clone;
     bool makeInactive;
 public:
-    Observer(bool makeInactive = true);
-    void add(ObserverFeature *property);
+    Observer();
+    void add(ObserverFeature *feature);
+    void onDetection(Module *action, bool clone = false);
     void process(Candidate *candidate) const;
+    std::string getDescription() const;
+    void setFlag(std::string key, std::string value);
+    void setDeactivateOnDetection(bool deactivate);
+};
+
+/**
+ @class ObserverDetectAll
+ @brief Detects all particles
+ */
+class ObserverDetectAll: public ObserverFeature {
+public:
+    DetectionState checkDetection(Candidate *candidate) const;
     std::string getDescription() const;
 };
 
@@ -55,6 +72,21 @@ private:
     double radius;
 public:
     ObserverSmallSphere(Vector3d center = Vector3d(0.), double radius = 0);
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
+};
+
+/**
+ @class ObserverTracking
+ @brief Tracks particles inside a sphere
+ */
+class ObserverTracking: public ObserverFeature {
+private:
+    Vector3d center;
+    double radius;
+    double stepSize;
+public:
+    ObserverTracking(Vector3d center, double radius, double stepSize = 0);
     DetectionState checkDetection(Candidate *candidate) const;
     std::string getDescription() const;
 };
@@ -74,6 +106,18 @@ public:
 };
 
 /**
+ @class ObserverPoint
+ @brief Detects particles when reaching x = 0
+ This module limits the next step size to prevent candidates from overshooting.
+ Should be renamed to Observer1D, once old observer-scheme is removed.
+ */
+class ObserverPoint: public ObserverFeature {
+public:
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
+};
+
+/**
  @class ObserverRedshiftWindow
  @brief Detects particles in a given redshift window
  */
@@ -87,12 +131,10 @@ public:
 };
 
 /**
- @class ObserverPoint
- @brief Detects particles when reaching x = 0
-
- Should be renamed to Observer1D
+ @class ObserverInactiveVeto
+ @brief Veto for inactive candidates
  */
-class ObserverPoint: public ObserverFeature {
+class ObserverInactiveVeto: public ObserverFeature {
 public:
     DetectionState checkDetection(Candidate *candidate) const;
     std::string getDescription() const;
@@ -109,16 +151,6 @@ public:
 };
 
 /**
- @class ObserverChargedLeptonVeto
- @brief Veto for charged leptons
- */
-class ObserverChargedLeptonVeto: public ObserverFeature {
-public:
-    DetectionState checkDetection(Candidate *candidate) const;
-    std::string getDescription() const;
-};
-
-/**
  @class ObserverPhotonVeto
  @brief Veto for photons
  */
@@ -129,31 +161,14 @@ public:
 };
 
 /**
- @class ObserverOutput3D
- @brief Plain text output of 3D properties
+ @class ObserverElectronVeto
+ @brief Veto for electrons and positrons
  */
-class ObserverOutput3D: public ObserverFeature {
-private:
-    mutable std::ofstream fout;
+class ObserverElectronVeto: public ObserverFeature {
 public:
-    ObserverOutput3D(std::string filename);
-    ~ObserverOutput3D();
-    void onDetection(Candidate *candidate) const;
+    DetectionState checkDetection(Candidate *candidate) const;
+    std::string getDescription() const;
 };
-
-/**
- @class ObserverOutput1D
- @brief Plain text output of 1D properties
- */
-class ObserverOutput1D: public ObserverFeature {
-private:
-    mutable std::ofstream fout;
-public:
-    ObserverOutput1D(std::string filename);
-    ~ObserverOutput1D();
-    void onDetection(Candidate *candidate) const;
-};
-
 
 } // namespace grpropa
 
