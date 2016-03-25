@@ -115,8 +115,8 @@ add_library(grpropa SHARED
 	src/module/PairProduction.cpp
     src/module/Synchrotron.cpp
 	src/module/Redshift.cpp
-	src/module/OutputTXT.cpp
-	src/module/OutputShell.cpp
+	src/module/Output.cpp
+	src/module/TextOutput.cpp
 	src/module/Tools.cpp
 	src/magneticField/MagneticField.cpp
 	src/magneticField/MagneticFieldGrid.cpp
