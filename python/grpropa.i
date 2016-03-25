@@ -20,10 +20,9 @@ using std::ptrdiff_t;
 %include std_container.i
 %include "exception.i"
 
-#ifdef CRPROPA_HAVE_SAGA
-%import (module="saga") saga.i
+#ifdef grpropa_HAVE_SAGA
+    %import (module="saga") saga.i
 #endif
-
 
 %{
 #include "grpropa/module/InverseCompton.h"
@@ -33,10 +32,10 @@ using std::ptrdiff_t;
 #include "grpropa/module/BreakCondition.h"
 #include "grpropa/module/Boundary.h"
 #include "grpropa/module/Observer.h"
-#include "grpropa/module/OutputTXT.h"
-#include "grpropa/module/OutputShell.h"
+#include "grpropa/module/Output.h"
 #include "grpropa/module/SimplePropagation.h"
 #include "grpropa/module/PropagationCK.h"
+#include "grpropa/module/TextOutput.h"
 #include "grpropa/module/Tools.h"
 
 #include "grpropa/magneticField/MagneticField.h"
@@ -105,9 +104,28 @@ using std::ptrdiff_t;
 %include "grpropa/Random.h"
 %include "grpropa/ParticleState.h"
 
+
+%extend grpropa::Candidate {
+    PyObject * getProperty(PyObject * name){
+
+        std::string value;
+        std::string input;
+
+        if (PyString_Check( name )){ 
+            input = PyString_AsString( name );
+        } else {
+            std::cerr << "ERROR: The argument of getProperty() must be a string!" << std::endl;
+            return NULL;
+        }   
+        $self->getProperty( input, value );
+
+        return PyString_FromString( value.c_str() );
+    }   
+};
 %template(CandidateVector) std::vector< grpropa::ref_ptr<grpropa::Candidate> >;
 %template(CandidateRefPtr) grpropa::ref_ptr<grpropa::Candidate>;
 %include "grpropa/Candidate.h"
+
 
 %template(ModuleRefPtr) grpropa::ref_ptr<grpropa::Module>;
 %template(stdModuleList) std::list< grpropa::ref_ptr<grpropa::Module> >;
@@ -139,12 +157,12 @@ using std::ptrdiff_t;
 %include "grpropa/module/Observer.h"
 %include "grpropa/module/SimplePropagation.h"
 %include "grpropa/module/PropagationCK.h"
-%include "grpropa/module/OutputTXT.h"
-%include "grpropa/module/OutputShell.h"
+%include "grpropa/module/Output.h"
 %include "grpropa/module/Synchrotron.h"
 %include "grpropa/module/InverseCompton.h"
 %include "grpropa/module/PairProduction.h"
 %include "grpropa/module/Redshift.h"
+%include "grpropa/module/TextOutput.h"
 %include "grpropa/module/Tools.h"
 
 %template(SourceRefPtr) grpropa::ref_ptr<grpropa::Source>;
@@ -156,50 +174,28 @@ using std::ptrdiff_t;
 %template(ModuleListRefPtr) grpropa::ref_ptr<grpropa::ModuleList>;
 %include "grpropa/ModuleList.h"
 
+%template(IntSet) std::set<int>;
+%include "grpropa/module/Tools.h"
 
-// pretty print
+__REPR__(grpropa::ParticleState);
+__REPR__(grpropa::Candidate);
+__REPR__(grpropa::Module);
+__REPR__(grpropa::ModuleList);
+__REPR__(grpropa::Source);
+__REPR__(grpropa::SourceList);
+__REPR__(grpropa::SourceFeature);
+__REPR__(grpropa::Observer);
+__REPR__(grpropa::ObserverFeature);
+
+VECTOR3__REPR__(grpropa::Vector3);
+
 %pythoncode %{
-ParticleState.__repr__ = ParticleState.getDescription
-Candidate.__repr__ = Candidate.getDescription
+    DeflectionCK = PropagationCK  # legacy name
+%}
 
-Module.__repr__ = Module.getDescription
-ModuleList.__repr__ = ModuleList.getDescription
-
-Source.__repr__ = Source.getDescription
-SourceList.__repr__ = SourceList.getDescription
-SourceParticleType.__repr__ = SourceParticleType.getDescription
-SourceMultipleParticleTypes.__repr__ = SourceMultipleParticleTypes.getDescription
-SourceEnergy.__repr__ = SourceEnergy.getDescription
-SourcePowerLawSpectrum.__repr__ = SourcePowerLawSpectrum.getDescription
-SourceMultiplePositions.__repr__ = SourceMultiplePositions.getDescription
-SourcePosition.__repr__ = SourcePosition.getDescription
-SourceUniform1D.__repr__ = SourceUniform1D.getDescription
-SourceUniformBox.__repr__ = SourceUniformBox.getDescription
-SourceUniformShell.__repr__ = SourceUniformShell.getDescription
-SourceUniformSphere.__repr__ = SourceUniformSphere.getDescription
-SourceDensityGrid.__repr__ = SourceDensityGrid.getDescription
-SourceDensityGrid1D.__repr__ = SourceDensityGrid1D.getDescription
-SourceDirection.__repr__ = SourceDirection.getDescription
-SourceIsotropicEmission.__repr__ = SourceIsotropicEmission.getDescription
-SourceEmissionCone.__repr__ = SourceEmissionCone.getDescription
-SourceRedshift.__repr__ = SourceRedshift.getDescription
-SourceRedshift1D.__repr__ = SourceRedshift1D.getDescription
-SourceUniformRedshift.__repr__ = SourceUniformRedshift.getDescription
-
-Observer.__repr__ = Observer.getDescription
-ObserverPoint.__repr__ = ObserverPoint.getDescription
-ObserverSmallSphere.__repr__ = ObserverSmallSphere.getDescription
-ObserverLargeSphere.__repr__ = ObserverLargeSphere.getDescription
-ObserverRedshiftWindow.__repr__ = ObserverRedshiftWindow.getDescription
-ObserverNeutrinoVeto.__repr__ = ObserverNeutrinoVeto.getDescription
-ObserverPhotonVeto.__repr__ = ObserverPhotonVeto.getDescription
-ObserverOutput1D.__repr__ = ObserverOutput1D.getDescription
-ObserverOutput3D.__repr__ = ObserverOutput3D.getDescription
-
-def Vector3__repr__(self):
-    return "Vector(%.3g, %.3g, %.3g)" % (self.x, self.y, self.z)
-Vector3d.__repr__ = Vector3__repr__
-Vector3f.__repr__ = Vector3__repr__
-
-DeflectionCK = PropagationCK  # legacy name
+%pythoncode %{
+    def Vector3__repr__(self):
+        return "Vector(%.3g, %.3g, %.3g)" % (self.x, self.y, self.z)
+    Vector3d.__repr__ = Vector3__repr__
+    Vector3f.__repr__ = Vector3__repr__
 %}
