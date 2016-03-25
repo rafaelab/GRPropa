@@ -14,9 +14,8 @@ namespace grpropa {
 /**
  @class Candidate
  @brief All information about the cosmic ray.
-
  The Candidate is a passive object, that holds the information about the state
- of the particle and the simulation itself.
+ of the cosmic ray and the simulation itself.
  */
 class Candidate: public Referenced {
 public:
@@ -83,7 +82,6 @@ public:
      Add a new candidate to the list of secondaries.
      @param id      particle ID of the secondary
      @param energy  energy of the secondary
-
      Adds a new candidate to the list of secondaries of this candidate.
      The secondaries Candidate::source and Candidate::previous state are set to
      the _source_ and _previous_ state of its parent.
@@ -92,7 +90,9 @@ public:
      and particle id.
      Trajectory length and redshift are copied from the parent.
      */
+    void addSecondary(Candidate *c);
     void addSecondary(int id, double energy);
+    void addSecondary(int id, double energy, Vector3d position);
     void clearSecondaries();
 
     std::string getDescription() const;
@@ -103,6 +103,7 @@ public:
      */
     ref_ptr<Candidate> clone(bool recursive = false) const;
 };
+
 
 } // namespace grpropa
 

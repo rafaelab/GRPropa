@@ -61,7 +61,6 @@
 #include "grpropa/Random.h"
 
 namespace grpropa {
-
 Random::Random(const uint32& oneSeed) {
     seed(oneSeed);
 }
@@ -161,6 +160,10 @@ Vector3d Random::randConeVector(const Vector3d &meanDirection,
     return randVectorAroundMean(meanDirection, theta);
 }
 
+Vector3d Random::randomInterpolatedPosition(const Vector3d &a, const Vector3d &b) {
+    return a + rand() * (b - a);
+}
+
 double Random::randPowerLaw(double index, double min, double max) {
     if ((min < 0) || (max < min)) {
         throw std::runtime_error(
@@ -226,7 +229,7 @@ Random::uint32 Random::randInt() {
         reload();
     --left;
 
-    register uint32 s1;
+    uint32 s1;
     s1 = *pNext++;
     s1 ^= (s1 >> 11);
     s1 ^= (s1 << 7) & 0x9d2c5680UL;
@@ -252,6 +255,33 @@ Random::uint32 Random::randInt(const uint32& n) {
     return i;
 }
 
+
+uint64_t Random::randInt64()
+{
+    return (randInt() << 32 | randInt());
+}
+
+
+uint64_t Random::randInt64(const uint64_t &n)
+{
+    uint64_t used = n;
+    used |= used >> 1;
+    used |= used >> 2;
+    used |= used >> 4;
+    used |= used >> 8;
+    used |= used >> 16;
+    used |= used >> 32;
+
+    // Draw numbers until one is found in [0,n]
+    uint64_t i;
+    do
+        i = randInt64() & used; // toss unused bits to shorten search
+    while (i > n);
+    return i;
+}
+
+
+
 void Random::seed(const uint32 oneSeed) {
     initialize(oneSeed);
     reload();
@@ -259,9 +289,9 @@ void Random::seed(const uint32 oneSeed) {
 
 void Random::seed(uint32 * const bigSeed, const uint32 seedLength) {
     initialize(19650218UL);
-    register int i = 1;
-    register uint32 j = 0;
-    register int k = (N > seedLength ? N : seedLength);
+    int i = 1;
+    uint32 j = 0;
+    int k = (N > seedLength ? N : seedLength);
     for (; k; --k) {
         state[i] = state[i]
                 ^ ((state[i - 1] ^ (state[i - 1] >> 30)) * 1664525UL);
@@ -296,9 +326,9 @@ void Random::seed() {
     FILE* urandom = fopen("/dev/urandom", "rb");
     if (urandom) {
         uint32 bigSeed[N];
-        register uint32 *s = bigSeed;
-        register int i = N;
-        register bool success = true;
+        uint32 *s = bigSeed;
+        int i = N;
+        bool success = true;
         while (success && i--)
             success = fread(s++, sizeof(uint32), 1, urandom) != 0;
         fclose(urandom);
@@ -313,9 +343,9 @@ void Random::seed() {
 }
 
 void Random::initialize(const uint32 seed) {
-    register uint32 *s = state;
-    register uint32 *r = state;
-    register int i = 1;
+    uint32 *s = state;
+    uint32 *r = state;
+    int i = 1;
     *s++ = seed & 0xffffffffUL;
     for (; i < N; ++i) {
         *s++ = (1812433253UL * (*r ^ (*r >> 30)) + i) & 0xffffffffUL;
@@ -324,8 +354,8 @@ void Random::initialize(const uint32 seed) {
 }
 
 void Random::reload() {
-    register uint32 *p = state;
-    register int i;
+    uint32 *p = state;
+    int i;
     for (i = N - M; i--; ++p)
         *p = twist(p[M], p[0], p[1]);
     for (i = M; --i; ++p)
@@ -354,18 +384,18 @@ Random::uint32 Random::hash(time_t t, clock_t c) {
 }
 
 void Random::save(uint32* saveArray) const {
-    register uint32 *sa = saveArray;
-    register const uint32 *s = state;
-    register int i = N;
+    uint32 *sa = saveArray;
+    const uint32 *s = state;
+    int i = N;
     for (; i--; *sa++ = *s++) {
     }
     *sa = left;
 }
 
 void Random::load(uint32 * const loadArray) {
-    register uint32 *s = state;
-    register uint32 *la = loadArray;
-    register int i = N;
+    uint32 *s = state;
+    uint32 *la = loadArray;
+    int i = N;
     for (; i--; *s++ = *la++) {
     }
     left = *la;
@@ -373,16 +403,16 @@ void Random::load(uint32 * const loadArray) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Random& mtrand) {
-    register const Random::uint32 *s = mtrand.state;
-    register int i = mtrand.N;
+    const Random::uint32 *s = mtrand.state;
+    int i = mtrand.N;
     for (; i--; os << *s++ << "\t") {
     }
     return os << mtrand.left;
 }
 
 std::istream& operator>>(std::istream& is, Random& mtrand) {
-    register Random::uint32 *s = mtrand.state;
-    register int i = mtrand.N;
+    Random::uint32 *s = mtrand.state;
+    int i = mtrand.N;
     for (; i--; is >> *s++) {
     }
     is >> mtrand.left;
@@ -411,7 +441,7 @@ __attribute__ ((aligned(64))) static RANDOM_TLS_ITEM _tls[MAX_THREAD];
 Random &Random::instance() {
     int i = omp_get_thread_num();
     if (i >= MAX_THREAD)
-    throw std::runtime_error("grpropa::Random: more than MAX_THREAD threads!");
+    throw std::runtime_error("crpropa::Random: more than MAX_THREAD threads!");
     return _tls[i].r;
 }
 

@@ -4,23 +4,18 @@
 
 namespace grpropa {
 
-DetectionState ObserverFeature::checkDetection(Candidate *candidate) const {
-    return NOTHING;
-}
-
-void ObserverFeature::onDetection(Candidate *candidate) const {
-}
-
-std::string ObserverFeature::getDescription() const {
-    return description;
-}
-
-Observer::Observer(bool makeInactive) :
-        makeInactive(makeInactive) {
+// Observer -------------------------------------------------------------------
+Observer::Observer() :
+        makeInactive(true), clone(false) {
 }
 
 void Observer::add(ObserverFeature *feature) {
     features.push_back(feature);
+}
+
+void Observer::onDetection(Module *action, bool clone_) {
+    detectionAction = action;
+    clone = clone_;
 }
 
 void Observer::process(Candidate *candidate) const {
@@ -39,19 +34,64 @@ void Observer::process(Candidate *candidate) const {
             features[i]->onDetection(candidate);
         }
 
+        if (detectionAction.valid()) {
+            if (clone)
+                detectionAction->process(candidate->clone(false));
+            else
+                detectionAction->process(candidate);
+        }
+
+        if (!flagKey.empty())
+            candidate->setProperty(flagKey, flagValue);
+
         if (makeInactive)
             candidate->setActive(false);
     }
 }
 
+void Observer::setFlag(std::string key, std::string value) {
+    flagKey = key;
+    flagValue = value;
+}
+
 std::string Observer::getDescription() const {
     std::stringstream ss;
-    ss << "Observer\n";
+    ss << "Observer";
     for (int i = 0; i < features.size(); i++)
-        ss << "    " << features[i]->getDescription() << "\n";
+        ss << "\n    " << features[i]->getDescription() << "\n";
+    ss << "    Flag: '" << flagKey << "' -> '" << flagValue << "'\n";
+    ss << "    MakeInactive: " << (makeInactive ? "yes\n" : "no\n");
+    if (detectionAction.valid())
+        ss << "    Action: " << detectionAction->getDescription() << ", clone: " << (clone ? "yes" : "no");
+
     return ss.str();
 }
 
+void Observer::setDeactivateOnDetection(bool deactivate) {
+    makeInactive = deactivate;
+}
+
+// ObserverFeature ------------------------------------------------------------
+DetectionState ObserverFeature::checkDetection(Candidate *candidate) const {
+    return NOTHING;
+}
+
+void ObserverFeature::onDetection(Candidate *candidate) const {
+}
+
+std::string ObserverFeature::getDescription() const {
+    return description;
+}
+
+// ObserverDetectAll ----------------------------------------------------------
+DetectionState ObserverDetectAll::checkDetection(Candidate *candidate) const {
+    return DETECTED;
+}
+
+std::string ObserverDetectAll::getDescription() const {
+}
+
+// ObserverSmallSphere --------------------------------------------------------
 ObserverSmallSphere::ObserverSmallSphere(Vector3d center, double radius) :
         center(center), radius(radius) {
 }
@@ -86,6 +126,42 @@ std::string ObserverSmallSphere::getDescription() const {
     return ss.str();
 }
 
+// ObserverTracking --------------------------------------------------------
+ObserverTracking::ObserverTracking(Vector3d center, double radius, double stepSize) :
+        center(center), radius(radius), stepSize(stepSize) {
+    if (stepSize == 0) {
+        stepSize = radius / 10.;
+    }
+}
+
+DetectionState ObserverTracking::checkDetection(Candidate *candidate) const {
+    // current distance to observer sphere center
+    double d = (candidate->current.getPosition() - center).getR();
+
+    // no detection if outside of observer sphere
+    if (d > radius) {
+        // conservatively limit next step to prevent overshooting
+        candidate->limitNextStep(fabs(d - radius));
+
+        return NOTHING;
+    } else {
+        // limit next step
+        candidate->limitNextStep(stepSize);
+
+        return DETECTED;
+    }
+}
+
+std::string ObserverTracking::getDescription() const {
+    std::stringstream ss;
+    ss << "ObserverTracking: ";
+    ss << "center = " << center / Mpc << " Mpc, ";
+    ss << "radius = " << radius / Mpc << " Mpc";
+    ss << "stepSize = " << stepSize / Mpc << " Mpc";
+    return ss.str();
+}
+
+// ObserverLargeSphere --------------------------------------------------------
 ObserverLargeSphere::ObserverLargeSphere(Vector3d center, double radius) :
         center(center), radius(radius) {
 }
@@ -120,7 +196,7 @@ std::string ObserverLargeSphere::getDescription() const {
     return ss.str();
 }
 
-
+// ObserverPoint --------------------------------------------------------------
 DetectionState ObserverPoint::checkDetection(Candidate *candidate) const {
     double x = candidate->current.getPosition().x;
     if (x > 0) {
@@ -134,13 +210,12 @@ std::string ObserverPoint::getDescription() const {
     return "ObserverPoint: observer at x = 0";
 }
 
-
+// ObserverRedshiftWindow -----------------------------------------------------
 ObserverRedshiftWindow::ObserverRedshiftWindow(double zmin, double zmax) :
         zmin(zmin), zmax(zmax) {
 }
 
-DetectionState ObserverRedshiftWindow::checkDetection(
-        Candidate *candidate) const {
+DetectionState ObserverRedshiftWindow::checkDetection(Candidate *candidate) const {
     double z = candidate->getRedshift();
     if (z > zmax)
         return VETO;
@@ -155,120 +230,49 @@ std::string ObserverRedshiftWindow::getDescription() const {
     return ss.str();
 }
 
+// ObserverInactiveVeto -------------------------------------------------------
+DetectionState ObserverInactiveVeto::checkDetection(Candidate *c) const {
+    if (not(c->isActive()))
+        return VETO;
+    return NOTHING;
+}
+
+std::string ObserverInactiveVeto::getDescription() const {
+    return "ObserverInactiveVeto";
+}
+
+// ObserverNeutrinoVeto -------------------------------------------------------
 DetectionState ObserverNeutrinoVeto::checkDetection(Candidate *c) const {
-    int id = fabs(c->current.getId());
+    int id = abs(c->current.getId());
     if ((id == 12) or (id == 14) or (id == 16))
-        return NOTHING;
-    return VETO;
+        return VETO;
+    return NOTHING;
 }
 
 std::string ObserverNeutrinoVeto::getDescription() const {
     return "ObserverNeutrinoVeto";
 }
 
-DetectionState ObserverChargedLeptonVeto::checkDetection(Candidate *c) const {
-    int id = fabs(c->current.getId());
-    if ((fabs(id) == 11) or (fabs(id) == 13) or (fabs(id == 15)))
-        return NOTHING;
-    return VETO;
-}
-
-std::string ObserverChargedLeptonVeto::getDescription() const {
-    return "ObserverChargedLeptonVeto";
-}
-
+// ObserverPhotonVeto ---------------------------------------------------------
 DetectionState ObserverPhotonVeto::checkDetection(Candidate *c) const {
     if (c->current.getId() == 22)
-        return NOTHING;
-    return VETO;
+        return VETO;
+    return NOTHING;
 }
 
 std::string ObserverPhotonVeto::getDescription() const {
     return "ObserverPhotonVeto";
 }
 
-ObserverOutput3D::ObserverOutput3D(std::string fname) {
-    description = "ObserverOutput3D: " + fname;
-    fout.open(fname.c_str());
-    fout
-            << "# dT\tD\tID\tID0\tE\tE0\tX\tY\tZ\tX0\tY0\tZ0\tPx\tPy\tPz\tP0x\tP0y\tP0z\tz\n";
-    fout << "#\n";
-    fout << "# D           Trajectory length [Mpc]\n";
-    fout << "# ID          Particle type (PDG MC numbering scheme)\n";
-    fout << "# E           Energy [EeV]\n";
-    fout << "# X, Y, Z     Position [Mpc]\n";
-    fout << "# Px, Py, Pz  Heading (unit vector of momentum)\n";
-    fout << "# Initial state: ID0, E0, ...\n";
-    fout << "# z           Redshift\n";
-    fout << "#\n";
-    
+// ObserverElectronVeto ---------------------------------------------------------
+DetectionState ObserverElectronVeto::checkDetection(Candidate *c) const {
+    if (abs(c->current.getId()) == 11)
+        return VETO;
+    return NOTHING;
 }
 
-ObserverOutput3D::~ObserverOutput3D() {
-    fout.close();
-}
-
-void ObserverOutput3D::onDetection(Candidate *candidate) const {
-    char buffer[512];
-    size_t p = 0;
-
-    Vector3d xi = candidate->source.getPosition();
-    Vector3d xf = candidate->current.getPosition();
-    double dt = (xf - xi).getR() / c_light;
-    p += sprintf(buffer + p, "%5.4e\t", dt);
-    p += sprintf(buffer + p, "%10i\t", candidate->current.getId());
-    p += sprintf(buffer + p, "%10i\t", candidate->source.getId());
-    p += sprintf(buffer + p, "%4.4e\t", candidate->current.getEnergy() / eV);
-    p += sprintf(buffer + p, "%4.4e\t", candidate->source.getEnergy() / eV);
-    Vector3d pos = candidate->current.getPosition() / Mpc;
-    p += sprintf(buffer + p, "%6.5e\t%6.5e\t%6.5e\t", pos.x, pos.y, pos.z);
-    Vector3d ipos = candidate->source.getPosition() / Mpc;
-    p += sprintf(buffer + p, "%6.5e\t%6.5e\t%6.5e\t", ipos.x, ipos.y, ipos.z);
-    Vector3d dir = candidate->current.getDirection();
-    p += sprintf(buffer + p, "%6.5e\t%6.5e\t%6.5e\t", dir.x, dir.y, dir.z);
-    Vector3d idir = candidate->source.getDirection();
-    p += sprintf(buffer + p, "%6.5e\t%6.5e\t%6.5e\t", idir.x, idir.y, idir.z);
-    p += sprintf(buffer + p, "%8.7e\n", candidate->getRedshift());
-
-
-#pragma omp critical
-    {
-        fout.write(buffer, p);
-        fout.flush();
-    }
-}
-
-ObserverOutput1D::ObserverOutput1D(std::string fname) {
-    description = "ObserverOutput1D: " + fname;
-    fout.open(fname.c_str());
-    fout << "#ID\tE\tD\tID0\tE0\n";
-    fout << "#\n";
-    fout << "# ID  Particle type\n";
-    fout << "# E   Energy [EeV]\n";
-    fout << "# D   Comoving trajectory length [Mpc]\n";
-    fout << "# ID0 Initial particle type\n";
-    fout << "# E0  Initial energy [eV]\n";
-}
-
-ObserverOutput1D::~ObserverOutput1D() {
-    fout.close();
-}
-
-void ObserverOutput1D::onDetection(Candidate *candidate) const {
-    char buffer[256];
-    size_t p = 0;
-
-    p += sprintf(buffer + p, "%10i\t", candidate->current.getId());
-    p += sprintf(buffer + p, "%.4e\t", candidate->current.getEnergy() / eV);
-    p += sprintf(buffer + p, "%9.4f\t", candidate->getTrajectoryLength() / Mpc);
-    p += sprintf(buffer + p, "%10i\t", candidate->source.getId());
-    p += sprintf(buffer + p, "%.4e\n", candidate->source.getEnergy() / eV);
-
-#pragma omp critical
-    {
-        fout.write(buffer, p);
-        fout.flush();
-    }
+std::string ObserverElectronVeto::getDescription() const {
+    return "ObserverElectronVeto";
 }
 
 }// namespace

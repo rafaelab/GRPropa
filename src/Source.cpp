@@ -4,15 +4,10 @@
 #include "grpropa/Common.h"
 #include "grpropa/Units.h"
 
-#ifdef GRPROPA_HAVE_MUPARSER
-#include "muParser.h"
-#endif
-
 #include <sstream>
 #include <stdexcept>
 
 namespace grpropa {
-
 
 // Source ---------------------------------------------------------------------
 void Source::add(SourceFeature* property) {
@@ -83,34 +78,6 @@ void SourceParticleType::prepareParticle(ParticleState& particle) const {
 void SourceParticleType::setDescription() {
     std::stringstream ss;
     ss << "SourceParticleType: " << id << "\n";
-    description = ss.str();
-}
-
-// ----------------------------------------------------------------------------
-SourceMultipleParticleTypes::SourceMultipleParticleTypes() {
-    setDescription();
-}
-
-void SourceMultipleParticleTypes::add(int id, double a) {
-    particleTypes.push_back(id);
-    if (cdf.size() > 0)
-        a += cdf.back();
-    cdf.push_back(a);
-    setDescription();
-}
-
-void SourceMultipleParticleTypes::prepareParticle(ParticleState& particle) const {
-    if (particleTypes.size() == 0)
-        throw std::runtime_error("SourceMultipleParticleTypes: no nuclei set");
-    size_t i = Random::instance().randBin(cdf);
-    particle.setId(particleTypes[i]);
-}
-
-void SourceMultipleParticleTypes::setDescription() {
-    std::stringstream ss;
-    ss << "SourceMultipleParticleTypes: Random particle type\n";
-    for (int i = 0; i < particleTypes.size(); i++)
-        ss << "      ID = " << particleTypes[i] << "\n";
     description = ss.str();
 }
 

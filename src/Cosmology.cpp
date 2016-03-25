@@ -7,7 +7,6 @@
 #include <stdexcept>
 
 namespace grpropa {
-
 /**
  @class Cosmology
  @brief Cosmology calculations
@@ -47,8 +46,9 @@ struct Cosmology {
     }
 
     Cosmology() {
-        H0 = 70.4 * 1000 * meter / second / Mpc; // default values
-        omegaM = 0.272;
+        // Cosmological parameters (K.A. Olive et al. (Particle Data Group), Chin. Phys. C, 38, 090001 (2014))
+        H0 = 67.3 * 1000 * meter / second / Mpc; // default values
+        omegaM = 0.315;
         omegaL = 1 - omegaM;
 
         Z.resize(n);
@@ -73,8 +73,8 @@ struct Cosmology {
 };
 
 const int Cosmology::n = 1000;
-const double Cosmology::zmin = 0.0001;
-const double Cosmology::zmax = 100;
+const double Cosmology::zmin = 1e-6;
+const double Cosmology::zmax = 1e2;
 
 static Cosmology cosmology; // instance is created at runtime
 
@@ -83,7 +83,8 @@ void setCosmologyParameters(double h, double oM) {
 }
 
 double hubbleRate(double z) {
-    return cosmology.H0 * sqrt(cosmology.omegaL + cosmology.omegaM * pow(1 + z, 3));
+    return cosmology.H0
+            * sqrt(cosmology.omegaL + cosmology.omegaM * pow(1 + z, 3));
 }
 
 double omegaL() {
@@ -161,5 +162,6 @@ double lightTravel2ComovingDistance(double d) {
         throw std::runtime_error("Cosmology: d > dmax");
     return interpolate(d, cosmology.Dt, cosmology.Dc);
 }
+
 
 } // namespace grpropa

@@ -16,8 +16,9 @@ using namespace std;
 namespace grpropa {
 
 bool g_cancel_signal_flag = false;
+
 void g_cancel_signal_callback(int sig) {
-    std::cerr << "crpropa::ModuleList: SIGINT/SIGTERM received" << std::endl;
+    std::cerr << "grpropa::ModuleList: SIGINT/SIGTERM received" << std::endl;
     g_cancel_signal_flag = true;
 }
 
@@ -35,25 +36,19 @@ void ModuleList::add(Module *module) {
     modules.push_back(module);
 }
 
-void ModuleList::beginRun() {
-    module_list_t::iterator m;
-    for (m = modules.begin(); m != modules.end(); m++)
-        (*m)->beginRun();
-}
-
-void ModuleList::endRun() {
-    module_list_t::iterator m;
-    for (m = modules.begin(); m != modules.end(); m++)
-        (*m)->endRun();
-}
-
 void ModuleList::process(Candidate *candidate) const {
     module_list_t::const_iterator m;
     for (m = modules.begin(); m != modules.end(); m++)
         (*m)->process(candidate);
 }
 
-void ModuleList::processToFinish(Candidate *candidate, bool recursive) {
+void ModuleList::process(ref_ptr<Candidate> candidate) const {
+    module_list_t::const_iterator m;
+    for (m = modules.begin(); m != modules.end(); m++)
+        (*m)->process(candidate);
+}
+
+void ModuleList::run(Candidate *candidate, bool recursive) {
     while (candidate->isActive() && !g_cancel_signal_flag)
         process(candidate);
 
@@ -62,22 +57,16 @@ void ModuleList::processToFinish(Candidate *candidate, bool recursive) {
         for (size_t i = 0; i < candidate->secondaries.size(); i++) {
             if (g_cancel_signal_flag)
                 break;
-            processToFinish(candidate->secondaries[i], recursive);
+            run(candidate->secondaries[i], recursive);
         }
     }
-}
-
-void ModuleList::run(Candidate *candidate, bool recursive) {
-    beginRun();
-    processToFinish(candidate, recursive);
-    endRun();
 }
 
 void ModuleList::run(candidate_vector_t &candidates, bool recursive) {
     size_t count = candidates.size();
 
 #if _OPENMP
-    std::cout << "crpropa::ModuleList: Number of Threads: " << omp_get_max_threads() << std::endl;
+    std::cout << "grpropa::ModuleList: Number of Threads: " << omp_get_max_threads() << std::endl;
 #endif
 
     ProgressBar progressbar(count);
@@ -90,17 +79,15 @@ void ModuleList::run(candidate_vector_t &candidates, bool recursive) {
     sighandler_t old_sigint_handler = ::signal(SIGINT, g_cancel_signal_callback);
     sighandler_t old_sigterm_handler = ::signal(SIGTERM, g_cancel_signal_callback);
 
-    beginRun();  // call beginRun in all modules
-
 #pragma omp parallel for schedule(static, 1000)
     for (size_t i = 0; i < count; i++) {
         if (g_cancel_signal_flag)
             continue;
 
         try {
-            processToFinish(candidates[i], recursive);
+            run(candidates[i], recursive);
         } catch (std::exception &e) {
-            std::cerr << "Exception in crpropa::ModuleList::run: " << std::endl;
+            std::cerr << "Exception in grpropa::ModuleList::run: " << std::endl;
             std::cerr << e.what() << std::endl;
         }
 
@@ -109,8 +96,6 @@ void ModuleList::run(candidate_vector_t &candidates, bool recursive) {
             progressbar.update();
     }
 
-    endRun();  // call endRun in all modules
-
     ::signal(SIGINT, old_sigint_handler);
     ::signal(SIGTERM, old_sigterm_handler);
 }
@@ -118,7 +103,7 @@ void ModuleList::run(candidate_vector_t &candidates, bool recursive) {
 void ModuleList::run(SourceInterface *source, size_t count, bool recursive) {
 
 #if _OPENMP
-    std::cout << "crpropa::ModuleList: Number of Threads: " << omp_get_max_threads() << std::endl;
+    std::cout << "grpropa::ModuleList: Number of Threads: " << omp_get_max_threads() << std::endl;
 #endif
 
     ProgressBar progressbar(count);
@@ -130,8 +115,6 @@ void ModuleList::run(SourceInterface *source, size_t count, bool recursive) {
     g_cancel_signal_flag = false;
     sighandler_t old_signal_handler = ::signal(SIGINT, g_cancel_signal_callback);
 
-    beginRun();  // call beginRun in all modules
-
 #pragma omp parallel for schedule(static, 1000)
     for (size_t i = 0; i < count; i++) {
         if (g_cancel_signal_flag)
@@ -142,16 +125,16 @@ void ModuleList::run(SourceInterface *source, size_t count, bool recursive) {
         try {
             candidate = source->getCandidate();
         } catch (std::exception &e) {
-            std::cerr << "Exception in crpropa::ModuleList::run: source->getCandidate" << std::endl;
+            std::cerr << "Exception in grpropa::ModuleList::run: source->getCandidate" << std::endl;
             std::cerr << e.what() << std::endl;
             g_cancel_signal_flag = true;
         }
 
         if (candidate.valid()) {
             try {
-                processToFinish(candidate, recursive);
+                run(candidate, recursive);
             } catch (std::exception &e) {
-                std::cerr << "Exception in crpropa::ModuleList::run: " << std::endl;
+                std::cerr << "Exception in grpropa::ModuleList::run: " << std::endl;
                 std::cerr << e.what() << std::endl;
                 g_cancel_signal_flag = true;
             }
@@ -161,8 +144,6 @@ void ModuleList::run(SourceInterface *source, size_t count, bool recursive) {
 #pragma omp critical(progressbarUpdate)
             progressbar.update();
     }
-
-    endRun();  // call endRun in all modules
 
     ::signal(SIGINT, old_signal_handler);
 }
@@ -178,7 +159,7 @@ const ModuleList::module_list_t &ModuleList::getModules() const {
 std::string ModuleList::getDescription() const {
     std::stringstream ss;
     ss << "ModuleList\n";
-    crpropa::ModuleList::module_list_t::const_iterator m;
+    grpropa::ModuleList::module_list_t::const_iterator m;
     for (m = modules.begin(); m != modules.end(); m++)
         ss << "  " << (*m)->getDescription() << "\n";
     return ss.str();
