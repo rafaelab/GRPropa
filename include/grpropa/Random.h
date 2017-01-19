@@ -71,6 +71,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
+#include <stdint.h>
 
 //necessary for win32
 #ifndef M_PI
