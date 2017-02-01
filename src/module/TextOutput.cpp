@@ -37,6 +37,8 @@ TextOutput::TextOutput(const std::string &filename, OutputType outputtype) : Out
 
 void TextOutput::printHeader() const {
     *out << "#";
+    if (fields.test(WeightColumn))
+        *out << "\tw";
     if (fields.test(TrajectoryLengthColumn))
         *out << "\tD";
     if (fields.test(RedshiftColumn))
@@ -83,6 +85,8 @@ void TextOutput::printHeader() const {
             *out << "\tP1x\tP1y\tP1z";
 
     *out << "\n#\n";
+    if (fields.test(WeightColumn))
+        *out << "# weight";
     if (fields.test(TrajectoryLengthColumn))
         *out << "# D             Trajectory length [" << lengthScale / Mpc << " Mpc]\n";
     if (fields.test(RedshiftColumn))
@@ -112,6 +116,8 @@ void TextOutput::process(Candidate *c) const {
 
     std::locale old_locale = std::locale::global(std::locale::classic());
 
+    if (fields.test(WeightColumn))
+        p += sprintf(buffer + p, "%8.4e\t", c->getWeight());
     if (fields.test(TrajectoryLengthColumn))
         p += sprintf(buffer + p, "%8.5f\t", c->getTrajectoryLength() / lengthScale);
     if (fields.test(RedshiftColumn))

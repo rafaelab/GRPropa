@@ -27,13 +27,15 @@ void Output::process(Candidate *c) const {
 void Output::setOutputType(OutputType outputtype) {
     modify();
     if (outputtype == Trajectory1D) {
-        // X, ID, E
+        // W, X, ID, E
+        set(WeightColumn, true);
         set(CurrentPositionColumn, true);
         set(CurrentIdColumn, true);
         set(CurrentEnergyColumn, true);
         set1D(true);
     } else if (outputtype == Event1D) {
-        // D, ID, E, ID0, E0
+        // w, D, ID, E, ID0, E0
+        set(WeightColumn, true);
         set(TrajectoryLengthColumn, true);
         set(CurrentIdColumn, true);
         set(CurrentEnergyColumn, true);
@@ -41,7 +43,8 @@ void Output::setOutputType(OutputType outputtype) {
         set(SourceEnergyColumn, true);
         set1D(true);
     } else if (outputtype == Trajectory3D) {
-        // D, ID, E, X, Y, Z, Px, Py, Pz
+        // w, D, ID, E, X, Y, Z, Px, Py, Pz
+        set(WeightColumn, true);
         set(TrajectoryLengthColumn, true);
         set(CurrentIdColumn, true);
         set(CurrentEnergyColumn, true);
@@ -49,7 +52,8 @@ void Output::setOutputType(OutputType outputtype) {
         set(CurrentDirectionColumn, true);
         set1D(false);
     } else if (outputtype == Event3D) {
-        // D, ID, E, X, Y, Z, Px, Py, Pz, ID0, E0, X0, Y0, Z0
+        // w, D, ID, E, X, Y, Z, Px, Py, Pz, ID0, E0, X0, Y0, Z0
+        set(WeightColumn, true);
         set(TrajectoryLengthColumn, true);
         set(CurrentIdColumn, true);
         set(CurrentEnergyColumn, true);
@@ -63,8 +67,7 @@ void Output::setOutputType(OutputType outputtype) {
         enableAll();
         set1D(false);
     } else {
-        throw std::runtime_error(
-                "TextOutput: unknown output type");
+        throw std::runtime_error("TextOutput: unknown output type");
     }
 }
 
@@ -111,5 +114,8 @@ void Output::disableAll() {
 size_t Output::getCount() const {
     return count;
 }
+
+
+
 
 } // namespace grpropa

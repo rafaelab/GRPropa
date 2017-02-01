@@ -23,6 +23,7 @@ protected:
 
 public:
     enum OutputColumn {
+        WeightColumn,
         TrajectoryLengthColumn,
         RedshiftColumn,
         CurrentIdColumn,
