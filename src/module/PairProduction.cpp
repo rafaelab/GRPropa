@@ -10,9 +10,9 @@ namespace grpropa {
 
 PairProduction::PairProduction(PhotonField photonField, double thinning, double limit, double nMaxIterations) {
     setPhotonField(photonField);
-    this->thinning = thinning;
-    this->limit = limit;
-    this->nMaxIterations = nMaxIterations;
+    setThinning(thinning);
+    setLimit(limit);
+    setMaxNumberOfInteractions(nMaxIterations);
 }
 
 void PairProduction::setPhotonField(PhotonField photonField) {
@@ -91,6 +91,10 @@ void PairProduction::setLimit(double limit) {
 
 void PairProduction::setThinning(double thinning) {
     this->thinning = thinning;
+}
+
+void PairProduction::setMaxNumberOfInteractions(double n) {
+    this->nMaxIterations = n;
 }
 
 void PairProduction::initRate(std::string filename) {
@@ -308,7 +312,6 @@ double PairProduction::energyFraction(double E, double z) const {
         y = 1 - y;
 
     return y;
-
 }
 
 double PairProduction::centerOfMassEnergy2(double E, double e, double mu) const {
@@ -376,24 +379,18 @@ void PairProduction::performInteraction(Candidate *candidate) const {
     
     double en = candidate->current.getEnergy();
     double z = candidate->getRedshift();
-    double y = energyFraction(en, z);
+    double f = energyFraction(en, z);
 
     Random &random = Random::instance();
     double r = random.rand();
-    double w0 = candidate->getWeight();
-    
-    candidate->setActive(false);
-    if (y > 0 && y < 1){
-        if (r < pow(y, thinning)){
-            double w = w0 / pow(y, thinning);
-            candidate->addSecondary(11, en * y, w);  
-        } 
-        if (r < pow(1 - y, thinning)){
-            double w = w0 / pow(1 - y, thinning);
-            candidate->addSecondary(-11, en * (1 - y), w); 
-        } 
-    }
-
+        
+    if (random.rand() < pow(f, thinning) && f > 0 && f < 1) {
+        double w0 = candidate->getWeight();
+        double w = w0 / pow(f, thinning);
+        candidate->addSecondary( 11, en * f, w);
+        candidate->addSecondary(-11, en * (1 - f), w);
+        candidate->setWeight(w);
+    } 
 
         
 }

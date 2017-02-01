@@ -37,6 +37,7 @@ public:
     void setPhotonField(PhotonField photonField);
     void setLimit(double limit);
     void setThinning(double thinning);
+    void setMaxNumberOfInteractions(double nMaxIterations);
     void initTableBackgroundEnergy(std::string filename);
     void initRate(std::string filename);
     void process(Candidate *candidate) const;

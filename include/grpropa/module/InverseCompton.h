@@ -30,15 +30,17 @@ private:
     std::vector<double> tabPhotonEnergy; /* background photon energy*/
     std::vector<double> tabProb; /* cumulative probability for background photon. */
 
+    double thinning; /* number of secondaries to be tracked; if 1 only one secondary is tracked */
     double limit; /* fraction of energy loss length to limit the next step */
-    bool redshiftDependence;
-    double Ethr;  /*< energy loss due to the emission of soft photons for E<Ethr */
+    bool redshiftDependence; /* whether EBL model is redshift-dependent */
+    double Ethr;  /* energy loss due to the emission of soft photons for E<Ethr */
 
 public:
-    InverseCompton(PhotonField photonField = CMB, double limit = 0.1, double Ethr = 1e5 * eV);
+    InverseCompton(PhotonField photonField = CMB, double thinning = 0, double limit = 0.1, double Ethr = 1e6 * eV);
 
     void setPhotonField(PhotonField photonField);
     void setLimit(double limit);
+    void setThinning(double thinning);
     void setThresholdEnergy(double Ethr);
     void initRate(std::string filename);
     void initTableBackgroundEnergy(std::string filename);

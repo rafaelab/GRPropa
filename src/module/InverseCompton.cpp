@@ -8,10 +8,11 @@
 
 namespace grpropa {
 
-InverseCompton::InverseCompton(PhotonField photonField, double limit, double ethr) {
+InverseCompton::InverseCompton(PhotonField photonField, double thinning, double limit, double ethr) {
     setPhotonField(photonField);
-    this->limit = limit;
-    this->Ethr = ethr;
+    setThinning(thinning);
+    setLimit(limit);
+    setThresholdEnergy(ethr);
 }
 
 void InverseCompton::setPhotonField(PhotonField photonField) {
@@ -30,8 +31,6 @@ void InverseCompton::setPhotonField(PhotonField photonField) {
         setDescription("Inverse Compton: EBL Gilmore et al. 2012");
         initRate(getDataPath("ICS-EBL_Gilmore12.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Gilmore12.txt"));
-        // initRate("/Users/rafaelab/Softwares/GRPropa/data/ICS-EBL_Gilmore12.txt");
-        // initTableBackgroundEnergy("/Users/rafaelab/Softwares/GRPropa/data/photonProbabilities-EBL_Gilmore12.txt");
         break;
     case EBL_Dominguez11:
         redshiftDependence = true;
@@ -85,6 +84,10 @@ void InverseCompton::setPhotonField(PhotonField photonField) {
     default:
         throw std::runtime_error("Inverse Compton: unknown photon background");
     }
+}
+
+void InverseCompton::setThinning(double thinning) {
+    this->thinning = thinning;
 }
 
 void InverseCompton::setLimit(double limit) {
@@ -297,7 +300,7 @@ double InverseCompton::energyFraction(double E, double z) const {
         if (random.rand() < gb)
             break;
     } while(r < gb);
-    //std::cout << s / pow(eV,2) << " " << ymin << " " << 1-y << " " << e/eV << " " << E/eV << std::endl;
+
     if (y > 0 && y < 1)
         return y;
     else
@@ -358,10 +361,9 @@ void InverseCompton::process(Candidate *c) const {
     E *= (1 + z);
 
     // only electrons / positrons allowed
-    if (fabs(id) != 11)
+    if (std::abs(id) != 11)
         return; 
 
-    //if (E > Ethr) {
     do {
         //double rate = interpolate(E, tabEnergy, tabRate);
         double rate = 1 / lossLength(id, E / (1 + z), z);
@@ -383,24 +385,22 @@ void InverseCompton::process(Candidate *c) const {
         // repeat with remaining steps
         step -= randDistance;
     } while (step > 0);
-    //} 
-    /*else { // continuous loss approximation for soft photons
-        double E = c->current.getEnergy();
-        double dE = energyLossBelowThreshold(E, z, step);
-        c->current.setEnergy(E - dE);
-    }*/
 }
 
 void InverseCompton::performInteraction(Candidate *candidate) const {
     
     double en = candidate->current.getEnergy();
     double z = candidate->getRedshift();
-    double y = energyFraction(en, z);
-    if (y > 0 && y < 1) {
-        candidate->current.setEnergy(en * y);
-        candidate->setActive(true);
-        candidate->addSecondary(22, en * (1 - y));
-    }
+    double f = energyFraction(en, z);
+
+    Random &random = Random::instance();
+    if (random.rand() < pow(f, thinning) && f > 0 && f < 1) {
+        double w0 = candidate->getWeight();
+        double w = w0 / pow(f, thinning);
+        candidate->current.setEnergy(en * f);
+        candidate->setWeight(w);
+        candidate->addSecondary(22, en * (1 - f), w); 
+    }  
 }
 
 
