@@ -26,15 +26,17 @@ private:
     std::vector<double> tabPhotonEnergy; /* background photon energy*/
     std::vector<double> tabProb; /* cumulative probability for background photon. */
 
+    double thinning; /* number of secondaries to be tracked; if 1 only one secondary is tracked */
     double limit; /* fraction of energy loss length to limit the next step */
     double nMaxIterations; /* maximum number of attempts to sample s in energy fraction */
-    bool redshiftDependence;
+    bool redshiftDependence; /* whether EBL model is redshift-dependent */
     
 public:
-    PairProduction(PhotonField photonField = CMB, double limit = 0.1, double nMaxIterations = 100);
+    PairProduction(PhotonField photonField = CMB, double thinning = 0., double limit = 0.1, double nMaxIterations = 100);
 
     void setPhotonField(PhotonField photonField);
     void setLimit(double limit);
+    void setThinning(double thinning);
     void initTableBackgroundEnergy(std::string filename);
     void initRate(std::string filename);
     void process(Candidate *candidate) const;

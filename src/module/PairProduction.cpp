@@ -8,8 +8,9 @@
 
 namespace grpropa {
 
-PairProduction::PairProduction(PhotonField photonField, double limit, double nMaxIterations) {
+PairProduction::PairProduction(PhotonField photonField, double thinning, double limit, double nMaxIterations) {
     setPhotonField(photonField);
+    this->thinning = thinning;
     this->limit = limit;
     this->nMaxIterations = nMaxIterations;
 }
@@ -86,6 +87,10 @@ void PairProduction::setPhotonField(PhotonField photonField) {
 
 void PairProduction::setLimit(double limit) {
     this->limit = limit;
+}
+
+void PairProduction::setThinning(double thinning) {
+    this->thinning = thinning;
 }
 
 void PairProduction::initRate(std::string filename) {
@@ -372,11 +377,25 @@ void PairProduction::performInteraction(Candidate *candidate) const {
     double en = candidate->current.getEnergy();
     double z = candidate->getRedshift();
     double y = energyFraction(en, z);
+
+    Random &random = Random::instance();
+    double r = random.rand();
+    double w0 = candidate->getWeight();
+    
     candidate->setActive(false);
     if (y > 0 && y < 1){
-        candidate->addSecondary(11, en * y);
-        candidate->addSecondary(-11, en * (1 - y));
+        if (r < pow(y, thinning)){
+            double w = w0 / pow(y, thinning);
+            candidate->addSecondary(11, en * y, w);  
+        } 
+        if (r < pow(1 - y, thinning)){
+            double w = w0 / pow(1 - y, thinning);
+            candidate->addSecondary(-11, en * (1 - y), w); 
+        } 
     }
+
+
+        
 }
 
 } // namespace grpropa
