@@ -16,7 +16,6 @@ InverseCompton::InverseCompton(PhotonField photonField, double thinning, double 
 }
 
 void InverseCompton::setPhotonField(PhotonField photonField) {
-
     this->photonField = photonField;
     switch (photonField) {
     case CMB:
@@ -41,19 +40,19 @@ void InverseCompton::setPhotonField(PhotonField photonField) {
     case EBL_Dominguez11_UL:
         redshiftDependence = true;
         setDescription("Inverse Compton: EBL Dominguez et al. 2011 (upper limit)");
-        initRate(getDataPath("ICS-EBL_Dominguez11_upper.txt"));
-        initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_upper.txt"));
+        initRate(getDataPath("ICS-EBL_Dominguez11_UL.txt"));
+        initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_UL.txt"));
         break;
     case EBL_Dominguez11_LL:
         redshiftDependence = true;
         setDescription("Inverse Compton: EBL Dominguez et al. 2011 (lower limit)");
-        initRate(getDataPath("ICS-EBL_Dominguez11_lower.txt"));
-        initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_lower.txt"));
+        initRate(getDataPath("ICS-EBL_Dominguez11_LL.txt"));
+        initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_LL.txt"));
         break;
     case EBL_Finke10:
         redshiftDependence = true;
         setDescription("Inverse Compton: EBL Finke et al. 2010");
-        initRate(getDataPath("ICs-EBL_Finke10.txt"));
+        initRate(getDataPath("ICS-EBL_Finke10.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Finke10.txt"));
         break;
     case EBL_Kneiske10:
@@ -86,12 +85,12 @@ void InverseCompton::setPhotonField(PhotonField photonField) {
     }
 }
 
-void InverseCompton::setThinning(double thinning) {
-    this->thinning = thinning;
-}
-
 void InverseCompton::setLimit(double limit) {
     this->limit = limit;
+}
+
+void InverseCompton::setThinning(double a) {
+    this->thinning = a;
 }
 
 void InverseCompton::setThresholdEnergy(double Ethr) {
@@ -99,11 +98,11 @@ void InverseCompton::setThresholdEnergy(double Ethr) {
 }
 
 void InverseCompton::initRate(std::string filename) {
-    
+
     if (redshiftDependence == false) {
         std::ifstream infile(filename.c_str());
         if (!infile.good())
-            throw std::runtime_error("Inverse Compton scattering: could not open file " + filename);
+            throw std::runtime_error("PairProduction: could not open file " + filename);
    
         // clear previously loaded interaction rates
         tabEnergy.clear();
@@ -122,10 +121,9 @@ void InverseCompton::initRate(std::string filename) {
         }
         infile.close();
     } else { // Rates for EBL
-
         std::ifstream infile(filename.c_str());
         if (!infile.good())
-            throw std::runtime_error("PairProduction: could not open file " + filename);
+            throw std::runtime_error("InverseCompton: could not open file " + filename);
   
         // clear previously loaded interaction rates
         tabEnergy.clear();
@@ -134,7 +132,7 @@ void InverseCompton::initRate(std::string filename) {
 
         // size of vector is predefined and depends on the model
         int nc; // number of columns (redshifts + one column for energy)
-        int nl = 81; // number of lines (energies)
+        int nl = 701; // number of lines (energies)
         std::vector<double> redshifts;
         if (photonField == EBL_Finke10) {
             nc = 33;
@@ -167,13 +165,13 @@ void InverseCompton::initRate(std::string filename) {
                 tabRedshift.push_back(redshifts[k]);
         }
         else { 
-            throw std::runtime_error("EBL model not defined for redshift dependent treatment (or not defined at all).");
+            throw std::runtime_error("EBL model not defined for redshift-dependent treatment (or not defined at all).");
         }
 
         double entries[nc+1][nl];
         int j = 0;
         while (!infile.eof()) {
-            for (int i=0; i<nc+1; i++) {
+            for (int i = 0; i < nc + 1; i++) {
                 double entry = 0;
                 infile >> entry;
                 entries[i][j] = entry;
@@ -183,16 +181,12 @@ void InverseCompton::initRate(std::string filename) {
 
         for (int j=0; j<nl; j++) 
             tabEnergy.push_back(entries[0][j] * eV);
-        for (int i=1; i<nc+1; i++){
-            for (int j=0; j<nl; j++){
+        for (int i=1; i <nc+1; i++)
+            for (int j=0; j<nl; j++)
                 tabRate.push_back(entries[i][j] / Mpc);
-            }
-        }
+
         infile.close();
     } // conditional: redshift dependent
-
-    // for (int i=0; i<tabRate.size(); i++) std::cout << tabRate[i] * Mpc << std::endl;
-    // for (int i=0; i<tabEnergy.size(); i++) std::cout << tabEnergy[i] /eV << std::endl;  
 }
 
 void InverseCompton::initTableBackgroundEnergy(std::string filename) {
@@ -228,7 +222,7 @@ void InverseCompton::initTableBackgroundEnergy(std::string filename) {
 
         // size of vector is predefined and depends on the model
         int nc; // number of columns (redshifts + one column for energy)
-        int nl = 400; // number of lines (probabilities)
+        int nl = 701; // number of lines (probabilities)
 
         if (photonField == EBL_Finke10) nc = 33;
         else if (photonField == EBL_Gilmore12) nc = 20;
@@ -256,15 +250,9 @@ void InverseCompton::initTableBackgroundEnergy(std::string filename) {
             }
         }
         infile.close();
-        tabProb.resize(nl);
 
-        // test
-        // for (int i=0; i<tabPhotonEnergy.size(); i++) std::cout << tabPhotonEnergy[i] / eV << std::endl;
-        // for (int i=0; i<tabProb.size(); i++) std::cout << tabProb[i] << std::endl;
-        // for (int i=0; i<tabRedshift.size(); i++) std::cout << tabRedshift[i] << std::endl;
     } // conditional: redshift dependent
 }
-
 double InverseCompton::energyFraction(double E, double z) const {
     /* 
         Returns the fraction of energy of the incoming electron taken by the

@@ -23,6 +23,7 @@ void PairProduction::setPhotonField(PhotonField photonField) {
         setDescription("Pair Production: CMB");
         initRate(getDataPath("PP-CMB.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-CMB.txt"));
+        // std::cout << getDataPath("PP-CMB.txt") << std::endl;
         break;
     case EBL:  // default: Gilmore '12 IRB model
     case EBL_Gilmore12:
@@ -31,25 +32,25 @@ void PairProduction::setPhotonField(PhotonField photonField) {
         initRate(getDataPath("PP-EBL_Gilmore12.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Gilmore12.txt"));
         break;
-    case EBL_Dominguez11: // not working
+    case EBL_Dominguez11:
         redshiftDependence = true;
         setDescription("Pair Production: EBL Dominguez et al. 2011");
-        // initRate(getDataPath("PP-EBL_Dominguez11.txt"));
+        initRate(getDataPath("PP-EBL_Dominguez11.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11.txt"));
         break;
-    case EBL_Dominguez11_UL: // not working
+    case EBL_Dominguez11_UL:
         redshiftDependence = true;
         setDescription("Pair Production: EBL Dominguez et al. 2011 (upper limit)");
-        // initRate(getDataPath("PP-EBL_Dominguez11_upper.txt"));
-        initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_upper.txt"));
+        initRate(getDataPath("PP-EBL_Dominguez11_UL.txt"));
+        initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_UL.txt"));
         break;
-    case EBL_Dominguez11_LL: // not working
+    case EBL_Dominguez11_LL:
         redshiftDependence = true;
         setDescription("Pair Production: EBL Dominguez et al. 2011 (lower limit)");
-        initRate(getDataPath("PP-EBL_Dominguez11_lower.txt"));
-        initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_lower.txt"));
+        initRate(getDataPath("PP-EBL_Dominguez11_LL.txt"));
+        initTableBackgroundEnergy(getDataPath("photonProbabilities-EBL_Dominguez11_LL.txt"));
         break;
-    case EBL_Finke10: // not working?
+    case EBL_Finke10:
         redshiftDependence = true;
         setDescription("Pair Production: EBL Finke et al. 2010");
         initRate(getDataPath("PP-EBL_Finke10.txt"));
@@ -89,12 +90,12 @@ void PairProduction::setLimit(double limit) {
     this->limit = limit;
 }
 
-void PairProduction::setThinning(double thinning) {
-    this->thinning = thinning;
+void PairProduction::setThinning(double a) {
+    this->thinning = a;
 }
 
-void PairProduction::setMaxNumberOfInteractions(double n) {
-    this->nMaxIterations = n;
+void PairProduction::setMaxNumberOfInteractions(double a) {
+    this->nMaxIterations = a;
 }
 
 void PairProduction::initRate(std::string filename) {
@@ -132,7 +133,7 @@ void PairProduction::initRate(std::string filename) {
 
         // size of vector is predefined and depends on the model
         int nc; // number of columns (redshifts + one column for energy)
-        int nl = 81; // number of lines (energies)
+        int nl = 701; // number of lines (energies)
         std::vector<double> redshifts;
         if (photonField == EBL_Finke10) {
             nc = 33;
@@ -147,7 +148,7 @@ void PairProduction::initRate(std::string filename) {
                 tabRedshift.push_back(redshifts[k]);
         }
         else if (photonField == EBL_Dominguez11 || photonField == EBL_Dominguez11_UL || photonField == EBL_Dominguez11_LL) {
-            nc = 20;
+            nc = 18;
             double redshifts[] = {0, 0.01, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.25, 1.5, 2.0, 2.5, 3.0, 3.9};
             for (int k=0; k<nc; k++) 
                 tabRedshift.push_back(redshifts[k]);
@@ -181,16 +182,13 @@ void PairProduction::initRate(std::string filename) {
 
         for (int j=0; j<nl; j++) 
             tabEnergy.push_back(entries[0][j] * eV);
-        for (int i=1; i<nc+1; i++){
-            for (int j=0; j<nl; j++){
+        for (int i=1; i<nc+1; i++)
+            for (int j=0; j<nl; j++)
                 tabRate.push_back(entries[i][j] / Mpc);
-            }
-        }
-        infile.close();
-    } // conditional: redshift dependent
 
-    // for (int i=0; i<tabRate.size(); i++) std::cout << tabRate[i] * Mpc << std::endl;
-    // for (int i=0; i<tabEnergy.size(); i++) std::cout << tabEnergy[i] /eV << std::endl;
+        infile.close();
+
+    } // conditional: redshift dependent
 }
 
 void PairProduction::initTableBackgroundEnergy(std::string filename) {
@@ -227,7 +225,7 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
 
         // size of vector is predefined and depends on the model
         int nc; // number of columns (redshifts + one column for energy)
-        int nl = 400; // number of lines (probabilities)
+        int nl = 701; // number of lines (probabilities)
 
         if (photonField == EBL_Finke10) nc = 33;
         else if (photonField == EBL_Gilmore12) nc = 20;
@@ -249,13 +247,11 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
 
         for (int j=0; j<nl; j++) 
             tabProb.push_back(entries[0][j]);
-        for (int i=1; i<nc+1; i++){
-            for (int j=0; j<nl; j++){
+        for (int i=1; i<nc+1; i++)
+            for (int j=0; j<nl; j++)
                 tabPhotonEnergy.push_back(entries[i][j] * eV);
-            }
-        }
+
         infile.close();
-        tabProb.resize(nl);
 
     } // conditional: redshift dependent
 }
