@@ -46,8 +46,7 @@ double SimplePropagation::getMaximumStep() const {
 
 std::string SimplePropagation::getDescription() const {
     std::stringstream s;
-    s << "Simple Propagation: Step size = " << minStep / Mpc
-            << " - " << maxStep / Mpc << " Mpc";
+    s << "Simple Propagation: Step size = " << minStep / Mpc << " - " << maxStep / Mpc << " Mpc";
     return s.str();
 }
 
