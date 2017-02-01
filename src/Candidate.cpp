@@ -15,7 +15,7 @@ Candidate::Candidate(int id, double E, Vector3d pos, Vector3d dir, double z, dou
 }
 
 Candidate::Candidate(const ParticleState &state) :
-        source(state), created(state), current(state), previous(state), redshift(0), trajectoryLength(0), currentStep(0), nextStep(0), weight(0), active(true) {
+        source(state), created(state), current(state), previous(state), redshift(0), trajectoryLength(0), currentStep(0), nextStep(0), active(true) {
 }
 
 bool Candidate::isActive() const {
