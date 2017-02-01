@@ -32,7 +32,7 @@ private:
     bool redshiftDependence; /* whether EBL model is redshift-dependent */
     
 public:
-    PairProduction(PhotonField photonField = CMB, double thinning = 0., double limit = 0.1, double nMaxIterations = 100);
+    PairProduction(PhotonField photonField = CMB, double thinning = 0., double limit = 0.1, double nMaxIterations = 10000);
 
     void setPhotonField(PhotonField photonField);
     void setLimit(double limit);

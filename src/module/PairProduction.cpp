@@ -256,6 +256,7 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
     } // conditional: redshift dependent
 }
 
+
 double PairProduction::energyFraction(double E, double z) const {
     /* 
         Returns the fraction of energy of the incoming photon taken by the
@@ -276,7 +277,7 @@ double PairProduction::energyFraction(double E, double z) const {
         if (errCounter >= nMaxIterations) {
             if (E > 4 * pow(mass_electron * c_squared, 2))
                 return 0.5;
-            else
+            elseB
                 return -1;
         }
         double e;    
@@ -378,15 +379,57 @@ void PairProduction::performInteraction(Candidate *candidate) const {
     double f = energyFraction(en, z);
 
     Random &random = Random::instance();
-    double r = random.rand();
-        
-    if (random.rand() < pow(f, thinning) && f > 0 && f < 1) {
-        double w0 = candidate->getWeight();
+      
+    // // method 0  
+    // if (random.rand() < pow(f, thinning) && f > 0 && f < 1) {
+    //     double w0 = candidate->getWeight();
+    //     double w = w0 / pow(f, thinning);
+    //     candidate->addSecondary( 11, en * f, w);
+    //     candidate->addSecondary(-11, en * (1 - f), w);
+    //     candidate->setWeight(w);
+    // } 
+
+    // // method 1
+    // if (f > 0 && f < 1){
+    //     double w0 = candidate->getWeight();
+    //     double wm = w0 / pow(f, thinning) / 2;
+    //     double wp = w0 / pow(1 - f, thinning) / 2;
+    //     if (r < 1 - pow(f, thinning) && r < 1 - pow(1 - f, thinning)){
+    //         candidate->addSecondary(11, en * f, wp);  
+    //         candidate->addSecondary(-11, en * (1 - f), wm);
+    //     } else if (r < 1 - pow(f, thinning) && r > 1 - pow(1 - f, thinning)){
+    //         candidate->addSecondary(11, en * f, wm);  
+    //     } else if (r > 1 - pow(f, thinning) && r < pow(1 - f, thinning)){
+    //         candidate->addSecondary(-11, en * (1 - f), wp);  
+    //     } else { 
+    //     }
+    // }
+
+    // method 2 - main (?)
+    double w0 = candidate->getWeight();
+    candidate->setActive(false);
+
+    if (random.rand() < pow(f, thinning) && f > 0 && f < 1){
         double w = w0 / pow(f, thinning);
-        candidate->addSecondary( 11, en * f, w);
-        candidate->addSecondary(-11, en * (1 - f), w);
-        candidate->setWeight(w);
-    } 
+        candidate->addSecondary(11, en * f, w); 
+        candidate->setWeight(w); 
+    }
+
+    if (random.rand() < pow(1 - f, thinning) && f > 0 && f < 1){
+        double w = w0 / pow(1 - f, thinning);
+        candidate->addSecondary(-11, en * (1 - f), w); 
+        candidate->setWeight(w); 
+    }
+
+    // // original
+    // candidate->setActive(false);
+    // if (random.rand() < pow(f, thinning) && f > 0 && f < 1) {
+    //     double w0 = candidate->getWeight();
+    //     double w = w0 / pow(f, thinning);
+    //     candidate->addSecondary( 11, en * f, w);
+    //     candidate->addSecondary(-11, en * (1 - f), w);
+    //     // candidate->setWeight(w);
+    // } 
 
         
 }
