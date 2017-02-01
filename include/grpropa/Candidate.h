@@ -99,8 +99,8 @@ public:
      Trajectory length and redshift are copied from the parent.
      */
     void addSecondary(Candidate *c);
-    void addSecondary(int id, double energy);
-    void addSecondary(int id, double energy, Vector3d position);
+    void addSecondary(int id, double energy, double weight = 1);
+    void addSecondary(int id, double energy, Vector3d position, double weight = 1);
     void clearSecondaries();
 
     std::string getDescription() const;

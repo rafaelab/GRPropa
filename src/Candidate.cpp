@@ -4,9 +4,8 @@ namespace grpropa {
 
 
 Candidate::Candidate(int id, double E, Vector3d pos, Vector3d dir, double z, double weight) :
-        trajectoryLength(0), currentStep(0), nextStep(0), weight(1), active(true) {
+        trajectoryLength(0), currentStep(0), nextStep(0), weight(0), active(true) {
     ParticleState state(id, E, pos, dir);
-
     source = state;
     created = state;
     previous = state;
@@ -16,7 +15,7 @@ Candidate::Candidate(int id, double E, Vector3d pos, Vector3d dir, double z, dou
 }
 
 Candidate::Candidate(const ParticleState &state) :
-        source(state), created(state), current(state), previous(state), redshift(0), trajectoryLength(0), currentStep(0), nextStep(0), weight(1), active(true) {
+        source(state), created(state), current(state), previous(state), redshift(0), trajectoryLength(0), currentStep(0), nextStep(0), weight(0), active(true) {
 }
 
 bool Candidate::isActive() const {
@@ -103,8 +102,9 @@ void Candidate::addSecondary(Candidate *c) {
     secondaries.push_back(c);
 }
 
-void Candidate::addSecondary(int id, double energy) {
+void Candidate::addSecondary(int id, double energy, double weight) {
     ref_ptr<Candidate> secondary = new Candidate;
+    secondary->setWeight(weight);
     secondary->setRedshift(redshift);
     secondary->setTrajectoryLength(trajectoryLength);
     secondary->source = source;
@@ -116,10 +116,11 @@ void Candidate::addSecondary(int id, double energy) {
     secondaries.push_back(secondary);
 }
 
-void Candidate::addSecondary(int id, double energy, Vector3d position) {
+void Candidate::addSecondary(int id, double energy, Vector3d position, double weight) {
     ref_ptr<Candidate> secondary = new Candidate;
     secondary->setRedshift(redshift);
     secondary->setTrajectoryLength(trajectoryLength-(current.getPosition()-position).getR());
+    secondary->setWeight(weight);
     secondary->source = source;
     secondary->previous = previous;
     secondary->created = current;
@@ -152,6 +153,7 @@ ref_ptr<Candidate> Candidate::clone(bool recursive) const {
 
     cloned->properties = properties;
     cloned->active = active;
+    cloned->weight = weight;
     cloned->redshift = redshift;
     cloned->trajectoryLength = trajectoryLength;
     cloned->currentStep = currentStep;
