@@ -3,18 +3,20 @@
 namespace grpropa {
 
 
-Candidate::Candidate(int id, double E, Vector3d pos, Vector3d dir, double z) :
-        trajectoryLength(0), currentStep(0), nextStep(0), active(true) {
+Candidate::Candidate(int id, double E, Vector3d pos, Vector3d dir, double z, double weight) :
+        trajectoryLength(0), currentStep(0), nextStep(0), weight(1), active(true) {
     ParticleState state(id, E, pos, dir);
+
     source = state;
     created = state;
     previous = state;
     current = state;
     setRedshift(z);
+    setWeight(weight);
 }
 
 Candidate::Candidate(const ParticleState &state) :
-        source(state), created(state), current(state), previous(state), redshift(0), trajectoryLength(0), currentStep(0), nextStep(0), active(true) {
+        source(state), created(state), current(state), previous(state), redshift(0), trajectoryLength(0), currentStep(0), nextStep(0), weight(1), active(true) {
 }
 
 bool Candidate::isActive() const {
@@ -41,6 +43,10 @@ double Candidate::getNextStep() const {
     return nextStep;
 }
 
+double Candidate::getWeight() const {
+    return weight;
+}
+
 void Candidate::setRedshift(double z) {
     redshift = z;
 }
@@ -56,6 +62,10 @@ void Candidate::setCurrentStep(double lstep) {
 
 void Candidate::setNextStep(double step) {
     nextStep = step;
+}
+
+void Candidate::setWeight(double w) {
+    weight = w;
 }
 
 void Candidate::limitNextStep(double step) {
