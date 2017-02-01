@@ -199,3 +199,9 @@ VECTOR3__REPR__(grpropa::Vector3);
     Vector3d.__repr__ = Vector3__repr__
     Vector3f.__repr__ = Vector3__repr__
 %}
+
+namespace std {
+   %template(Vector1i) vector<int>;
+   %template(Vector1d) vector<double>;
+   %template(Vector1f) vector<float>;
+};
