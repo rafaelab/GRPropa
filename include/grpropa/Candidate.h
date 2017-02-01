@@ -31,13 +31,14 @@ public:
 
 private:
     bool active; /**< Active status */
+    double weight; /**< Weight of the candidate */
     double redshift; /**< Current simulation time-point in terms of redshift z */
     double trajectoryLength; /**< Comoving distance [m] the candidate has travelled so far */
     double currentStep; /**< Size of the currently performed step in [m] comoving units */
     double nextStep; /**< Proposed size of the next propagation step in [m] comoving units */
 
 public:
-    Candidate(int id = 0, double energy = 0, Vector3d position = Vector3d(0, 0, 0), Vector3d direction = Vector3d(-1, 0, 0), double z = 0);
+    Candidate(int id = 0, double energy = 0, Vector3d position = Vector3d(0, 0, 0), Vector3d direction = Vector3d(-1, 0, 0), double z = 0, double weight = 1);
 
     /**
      Creates a candidate, initializing the Candidate::source, Candidate::created,
@@ -67,6 +68,13 @@ public:
      */
     void setNextStep(double step);
     double getNextStep() const;
+
+    /**
+     Sets weight of each candidate.
+     Weight are calculated after interactions following Elmag.
+     */
+    void setWeight(double weight);
+    double getWeight() const;
 
     /**
      Make a bid for the next step size: the lowest wins.
