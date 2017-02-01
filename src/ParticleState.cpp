@@ -68,6 +68,10 @@ Vector3d ParticleState::getVelocity() const {
     return direction * c_light;
 }
 
+double ParticleState::getSpeed() const {
+    return direction.getR() * c_light;
+}
+
 Vector3d ParticleState::getMomentum() const {
     return direction * (energy / c_light);
 }
