@@ -13,6 +13,7 @@ PairProduction::PairProduction(PhotonField photonField, double thinning, double 
     setThinning(thinning);
     setLimit(limit);
     setMaxNumberOfInteractions(nMaxIterations);
+    initEnergyFractions();
 }
 
 void PairProduction::setPhotonField(PhotonField photonField) {
@@ -256,6 +257,85 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
     } // conditional: redshift dependent
 }
 
+void PairProduction::initEnergyFractions() {
+
+    std::string filename = getDataPath("energyFraction-PP.txt");
+
+    std::ifstream infile(filename.c_str());
+    if (!infile.good())
+        throw std::runtime_error("PairProduction: could not open file " + filename);
+
+    // clear previously loaded interaction rates
+    tabEnergyCM.clear();
+    tabEnergyFractions.clear();
+    tabEnergyFractionsProb.clear();
+
+    int nc = 100; // number of columns (fractions + one column for s)
+    int nl = 1025; // number of lines (s)
+    
+    for (int i=1; i<=nc; i++){ 
+        double y = (double) i / nc; 
+        tabEnergyFractions.push_back(y);
+    }
+
+    double entries[nc+1][nl];
+    int j = 0;
+    while (!infile.eof()) {
+        for (int i=0; i<nc+1; i++) {
+            double entry = 0;
+            infile >> entry;
+            entries[i][j] = entry;
+            // std::cout << entry << std::endl;
+        }
+        j++;
+    }
+
+    for (int j=0; j<nl; j++) {
+        tabEnergyCM.push_back(entries[0][j]);
+        std::cout << tabEnergyCM[j]  << std::endl;
+    }
+    for (int i=1; i<nc+1; i++) {
+        for (int j=0; j<nl; j++) {
+            tabEnergyFractionsProb.push_back(entries[i][j]);
+            // std::cout << tabEnergyCM[j] << " " << tabEnergyFractions[i] << " " << entries[i][j] << std::endl;
+        }
+    }
+    infile.close();
+
+
+    // // clear previously loaded vectors
+
+
+    // double lsmin = log10(1e-32 * eV * eV);
+    // double lsmax = log10(1.e23 * eV * eV);
+
+    // int n1 = 100;
+    // int n2 = 100;
+
+    // for (int i = 1; i < n1; i ++) {
+    //     double ls = (lsmax - lsmin) * (double) i / n1;
+    //     double s = pow(10, ls); 
+    //     tabEnergyCM.push_back(s);
+    //     for (int j = 1; j < n2; j++) {
+    //         double y = (double) j / n2;
+    //         if (j == 1)
+    //             tabEnergyFractions.push_back(y);
+    //         double beta = sqrt(1 - 4 * pow(mass_electron * c_squared, 2) / s);
+    //         double pf = 1 / (1 + 2 * beta * beta * (1 - beta * beta));
+    //         double f1 = y * y / (1 - y);
+    //         double f2 = 1 - y + (1 - beta * beta) / (1 - y);
+    //         double f3 = pow(1 - beta * beta, 2) / (4. * y * pow(1 - y, 2) );
+    //         double diff = pf * (f1 + f2 - f3);            
+    //         tabDiffCrossSectionProb.push_back(diff);
+    //     }
+    // }
+    // double norm = tabDiffCrossSectionProb[tabDiffCrossSectionProb.size()-1];
+    // for (int k = 0; k < tabDiffCrossSectionProb.size(); k++) {
+    //     tabDiffCrossSectionProb[k] = tabDiffCrossSectionProb[k] / norm;
+    //     // std::cout << tabDiffCrossSectionProb[k] << std::endl;
+    // }
+
+}
 
 double PairProduction::energyFraction(double E, double z) const {
     /* 
@@ -269,47 +349,79 @@ double PairProduction::energyFraction(double E, double z) const {
               background photon.
     */
     Random &random = Random::instance();
+    double e;    
+    if (redshiftDependence == true)
+        e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
+    else
+        e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
 
-    double s = 0;
-    int errCounter = 0;
-    int nMaxIterations = this->nMaxIterations;
-    do {
-        if (errCounter >= nMaxIterations) {
-            if (E > 4 * pow(mass_electron * c_squared, 2))
-                return 0.5;
-            elseB
-                return -1;
-        }
-        double e;    
-        if (redshiftDependence == true)
-            e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
-        else
-            e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
+    // kinematics
+    double mu = random.randUniform(-1, 1);  
+    double s = centerOfMassEnergy2(E, e, mu);
 
-        // kinematics
-        double mu = random.randUniform(-1, 1);  
-        s = centerOfMassEnergy2(E, e, mu);
-        errCounter++;
-    } while ( s < 4 * pow(mass_electron * c_squared, 2));
-    
-    double beta = sqrt(1 - 4 * pow(mass_electron * c_squared, 2) / s);
-    double ymin = (1 - beta) / 2;
-    double y = 0;
-    while(true) {
-        y = 0.5 * pow(2 * ymin, random.rand());
-        double pf = 1 / (1 + 2 * beta * beta * (1 - beta * beta));
-        double f1 = y * y / (1 - y);
-        double f2 = 1 - y + (1 - beta * beta) / (1 - y);
-        double f3 = pow(1 - beta * beta, 2) / (4. * y * pow(1 - y, 2) );
-        double gb = pf * (f1 + f2 - f3);
-        if (random.rand() < gb)
-            break;
-    }
-    if (random.rand() > 0.5) 
-        y = 1 - y;
+    double y = interpolate2d(s, random.rand(), tabEnergyCM, tabEnergyFractionsProb, tabEnergyFractions);
+
+
+    // std::cout << y << std::endl;
 
     return y;
 }
+
+
+
+// double PairProduction::energyFraction(double E, double z) const {
+//     /* 
+//         Returns the fraction of energy of the incoming photon taken by the
+//         outgoing electron.
+//         See ELMAG code for this implementation.
+//         Kachelriess et al., Comp. Phys. Comm 183 (2012) 1036
+
+//         Note: E is the correct value and should not be multiplied by (1+z).
+//               The redshift is used in this function only to draw the energy of the 
+//               background photon.
+//     */
+//     Random &random = Random::instance();
+
+//     double s = 0;
+//     int errCounter = 0;
+//     int nMaxIterations = this->nMaxIterations;
+//     do {
+//         if (errCounter >= nMaxIterations) {
+//             // if (E > 4 * pow(mass_electron * c_squared, 2))
+//             //     return 0.5;
+//             // else
+//                 return -1;
+//         }
+//         double e;    
+//         if (redshiftDependence == true)
+//             e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
+//         else
+//             e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
+
+//         // kinematics
+//         double mu = random.randUniform(-1, 1);  
+//         s = centerOfMassEnergy2(E, e, mu);
+//         errCounter++;
+//     } while ( s < 4 * pow(mass_electron * c_squared, 2));
+    
+//     double beta = sqrt(1 - 4 * pow(mass_electron * c_squared, 2) / s);
+//     double ymin = (1 - beta) / 2;
+//     double y = 0;
+//     while(true) {
+//         y = 0.5 * pow(2 * ymin, random.rand());
+//         double pf = 1 / (1 + 2 * beta * beta * (1 - beta * beta));
+//         double f1 = y * y / (1 - y);
+//         double f2 = 1 - y + (1 - beta * beta) / (1 - y);
+//         double f3 = pow(1 - beta * beta, 2) / (4. * y * pow(1 - y, 2) );
+//         double gb = pf * (f1 + f2 - f3);
+//         if (random.rand() < gb)
+//             break;
+//     }
+//     if (random.rand() > 0.5) 
+//         y = 1 - y;
+
+//     return y;
+// }
 
 double PairProduction::centerOfMassEnergy2(double E, double e, double mu) const {
     return 2 * E * e * (1 - mu);

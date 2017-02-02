@@ -20,6 +20,10 @@ class PairProduction: public Module {
 private:
     PhotonField photonField;
 
+    std::vector<double> tabEnergyFractions; //////********** NEW
+    std::vector<double> tabEnergyCM; //////********** NEW
+    std::vector<double> tabEnergyFractionsProb; //////********** NEW
+
     std::vector<double> tabEnergy; /* tabulated energy [eV] */
     std::vector<double> tabRate; /* tabulated rate [1/Mpc] */
     std::vector<double> tabRedshift; /* tabulated redshifts for z dependence of the IRB */
@@ -33,6 +37,8 @@ private:
     
 public:
     PairProduction(PhotonField photonField = CMB, double thinning = 0., double limit = 0.1, double nMaxIterations = 10000);
+
+    void initEnergyFractions(); //////********** NEW
 
     void setPhotonField(PhotonField photonField);
     void setLimit(double limit);
