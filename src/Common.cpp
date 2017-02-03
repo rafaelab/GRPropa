@@ -12,6 +12,7 @@
 #define index(j, i) ((j) + (i) * Y.size())
 // #define index(i, j) ((i) + (j) * X.size())
 
+
 namespace grpropa {
 
 std::string getDataPath(std::string filename) {
@@ -91,9 +92,12 @@ double interpolate2d(double x, double y, const std::vector<double> &X, const std
     double R1 = ((X[i+1] - x) / (X[i+1] - X[i])) * Q11 + ((x - X[i]) / (X[i+1] - X[i])) * Q21;
     double R2 = ((X[i+1] - x) / (X[i+1] - X[i])) * Q12 + ((x - X[i]) / (X[i+1] - X[i])) * Q22;
 
-    return ((Y[j+1] - y) / (Y[j+1] - Y[j])) * R1 + ((y - Y[j]) / (Y[j+1] - Y[j])) * R2;
+    double R = ((Y[j+1] - y) / (Y[j+1] - Y[j])) * R1 + ((y - Y[j]) / (Y[j+1] - Y[j])) * R2;
+
+    return R;
 
 }
+
 
 
 double interpolateEquidistant(double x, double lo, double hi, const std::vector<double> &Y) {
