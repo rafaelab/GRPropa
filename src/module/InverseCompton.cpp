@@ -102,7 +102,7 @@ void InverseCompton::initRate(std::string filename) {
     if (redshiftDependence == false) {
         std::ifstream infile(filename.c_str());
         if (!infile.good())
-            throw std::runtime_error("PairProduction: could not open file " + filename);
+            throw std::runtime_error("InverseCompton: could not open file " + filename);
    
         // clear previously loaded interaction rates
         tabEnergy.clear();
@@ -253,6 +253,7 @@ void InverseCompton::initTableBackgroundEnergy(std::string filename) {
 
     } // conditional: redshift dependent
 }
+
 double InverseCompton::energyFraction(double E, double z) const {
     /* 
         Returns the fraction of energy of the incoming electron taken by the
