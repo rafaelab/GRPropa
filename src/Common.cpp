@@ -10,7 +10,8 @@
 #include <algorithm>
 
 #define index(j, i) ((j) + (i) * Y.size())
-// #define index(i, j) ((i) + (j) * X.size())
+
+// #define index(i, j) ((i) + (j) * X.size()) // DOES NOT WORK!
 
 
 namespace grpropa {
@@ -84,10 +85,10 @@ double interpolate2d(double x, double y, const std::vector<double> &X, const std
     size_t i = itx - X.begin() - 1;
     size_t j = ity - Y.begin() - 1;
 
-    double Q11 = Z[index(i  , j)];
-    double Q12 = Z[index(i  , j+1)];
-    double Q21 = Z[index(i+1, j)];
-    double Q22 = Z[index(i+1, j+1)];
+    double Q11 = Z[index(j  , i)];
+    double Q12 = Z[index(j  , i+1)];
+    double Q21 = Z[index(j+1, i)];
+    double Q22 = Z[index(j+1, i+1)];
 
     double R1 = ((X[i+1] - x) / (X[i+1] - X[i])) * Q11 + ((x - X[i]) / (X[i+1] - X[i])) * Q21;
     double R2 = ((X[i+1] - x) / (X[i+1] - X[i])) * Q12 + ((x - X[i]) / (X[i+1] - X[i])) * Q22;
@@ -97,8 +98,6 @@ double interpolate2d(double x, double y, const std::vector<double> &X, const std
     return R;
 
 }
-
-
 
 double interpolateEquidistant(double x, double lo, double hi, const std::vector<double> &Y) {
     if (x <= lo)
