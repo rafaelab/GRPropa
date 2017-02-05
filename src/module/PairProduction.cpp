@@ -13,7 +13,6 @@ PairProduction::PairProduction(PhotonField photonField, double thinning, double 
     setThinning(thinning);
     setLimit(limit);
     setMaxNumberOfInteractions(nMaxIterations);
-    initEnergyFractions();
 }
 
 void PairProduction::setPhotonField(PhotonField photonField) {
@@ -24,7 +23,6 @@ void PairProduction::setPhotonField(PhotonField photonField) {
         setDescription("Pair Production: CMB");
         initRate(getDataPath("PP-CMB.txt"));
         initTableBackgroundEnergy(getDataPath("photonProbabilities-CMB.txt"));
-        // std::cout << getDataPath("PP-CMB.txt") << std::endl;
         break;
     case EBL:  // default: Gilmore '12 IRB model
     case EBL_Gilmore12:
@@ -100,7 +98,7 @@ void PairProduction::setMaxNumberOfInteractions(double a) {
 }
 
 void PairProduction::initRate(std::string filename) {
-    
+
     if (redshiftDependence == false) {
         std::ifstream infile(filename.c_str());
         if (!infile.good())
@@ -149,7 +147,7 @@ void PairProduction::initRate(std::string filename) {
                 tabRedshift.push_back(redshifts[k]);
         }
         else if (photonField == EBL_Dominguez11 || photonField == EBL_Dominguez11_UL || photonField == EBL_Dominguez11_LL) {
-            nc = 18;
+            nc = 20;
             double redshifts[] = {0, 0.01, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.25, 1.5, 2.0, 2.5, 3.0, 3.9};
             for (int k=0; k<nc; k++) 
                 tabRedshift.push_back(redshifts[k]);
@@ -167,13 +165,13 @@ void PairProduction::initRate(std::string filename) {
                 tabRedshift.push_back(redshifts[k]);
         }
         else { 
-            throw std::runtime_error("EBL model not defined for redshift dependent treatment (or not defined at all).");
+            throw std::runtime_error("EBL model not defined for redshift-dependent treatment (or not defined at all).");
         }
 
         double entries[nc+1][nl];
         int j = 0;
         while (!infile.eof()) {
-            for (int i=0; i<nc+1; i++) {
+            for (int i=0; i <=nc; i++) {
                 double entry = 0;
                 infile >> entry;
                 entries[i][j] = entry;
@@ -183,18 +181,16 @@ void PairProduction::initRate(std::string filename) {
 
         for (int j=0; j<nl; j++) 
             tabEnergy.push_back(entries[0][j] * eV);
-        for (int i=1; i<nc+1; i++)
+        for (int i=1; i<=nc; i++)
             for (int j=0; j<nl; j++)
                 tabRate.push_back(entries[i][j] / Mpc);
 
         infile.close();
-
     } // conditional: redshift dependent
 }
 
 void PairProduction::initTableBackgroundEnergy(std::string filename) {
-
-    if (redshiftDependence == false) {
+   if (redshiftDependence == false) {
         std::ifstream infile(filename.c_str());
         if (!infile.good())
             throw std::runtime_error("PairProduction: could not open file " + filename);
@@ -226,7 +222,7 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
 
         // size of vector is predefined and depends on the model
         int nc; // number of columns (redshifts + one column for energy)
-        int nl = 701; // number of lines (probabilities)
+        int nl = 501; // number of lines (probabilities)
 
         if (photonField == EBL_Finke10) nc = 33;
         else if (photonField == EBL_Gilmore12) nc = 20;
@@ -238,7 +234,7 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
         double entries[nc+1][nl];
         int j = 0;
         while (!infile.eof()) {
-            for (int i=0; i<nc+1; i++) {
+            for (int i=0; i<=nc; i++) {
                 double entry = 0;
                 infile >> entry;
                 entries[i][j] = entry;
@@ -246,61 +242,29 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
             j++;
         }
 
-        for (int j=0; j<nl; j++) 
+        for (int j=0; j<nl; j++) {
             tabProb.push_back(entries[0][j]);
-        for (int i=1; i<nc+1; i++)
-            for (int j=0; j<nl; j++)
+        }
+        for (int i=1; i<=nc; i++){
+            for (int j=0; j<nl; j++){
                 tabPhotonEnergy.push_back(entries[i][j] * eV);
-
+            }
+        }
         infile.close();
 
+        // int szprob = tabProb.size();
+        // int szen = tabPhotonEnergy.size();
+        // std::cout << tabProb.size() << " " << tabPhotonEnergy.size() << std::endl;
+        // std::cout << "sizes " << szprob << " " << szen << std::endl;
+
+        // for (int i=0; i<tabProb.size(); i++) {
+        //     std::cout << i << " " << tabProb[i] << std::endl;
+        // }
+        // for (int i=0; tabPhotonEnergy.size(); i++)
+        // std::cout << i << " " << tabPhotonEnergy[i] / eV << std::endl;
+
+
     } // conditional: redshift dependent
-}
-
-void PairProduction::initEnergyFractions() {
-
-    std::string filename = getDataPath("energyFraction-PP.txt");
-
-    std::ifstream infile(filename.c_str());
-    if (!infile.good())
-        throw std::runtime_error("PairProduction: could not open file " + filename);
-
-    // clear previously loaded interaction rates
-    tabEnergyCM.clear();
-    tabEnergyFractions.clear();
-    tabEnergyFractionsProb.clear();
-
-    int nc = 499; // number of columns (fractions + one column for s)
-    int nl = 500; // number of lines (s)
-    
-    for (int i=1; i<=nc; i++){ // checked
-        double p = (double) i / nc; 
-        tabEnergyFractionsProb.push_back(p);
-    }
-
-    double entries[nc+1][nl];
-    int j = 0;
-    while (!infile.eof()) {
-        for (int i=0; i<nc+1; i++) {
-            double entry = 0;
-            infile >> entry;
-            entries[i][j] = entry;
-        }
-        j++;
-    }
-
-
-    for (int j=0; j<nl; j++) {
-        tabEnergyCM.push_back(entries[0][j]);
-    }
-    int k = 0;
-    for (int i=1; i<nc+1; i++) {
-        for (int j=0; j<nl; j++){
-            tabEnergyFractions.push_back(entries[i][j]);
-        }
-    }
-    infile.close();
-    // std::cout << "Pair Production: energy fractions loaded." << std::endl;
 }
 
 double PairProduction::energyFraction(double E, double z) const {
@@ -309,30 +273,46 @@ double PairProduction::energyFraction(double E, double z) const {
         outgoing electron.
         See ELMAG code for this implementation.
         Kachelriess et al., Comp. Phys. Comm 183 (2012) 1036
-
         Note: E is the correct value and should not be multiplied by (1+z).
               The redshift is used in this function only to draw the energy of the 
               background photon.
     */
     Random &random = Random::instance();
-    double e;    
-    if (redshiftDependence == true)
-        e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
-    else
-        e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
 
-    // kinematics
-    double mu = random.randUniform(-1, 1);  
-    double s = centerOfMassEnergy2(E, e, mu);
-    double r = random.rand();
-    for (int i=0; i<tabEnergyCM.size(); i++)
-        Y.push_back(log10(tabEnergyCM[i]));
+    double s = 0;
+    int errCounter = 0;
+    int nMaxIterations = this->nMaxIterations;
+    do {
+        if (errCounter >= nMaxIterations) 
+            return -1;
 
-    double y = interpolate2d(s, r, tabEnergyCM, tabEnergyFractionsProb, tabEnergyFractions);
-    // enforce charge conservation by rejecting all of such particles
-    if (y == 0) y = -1;
-    if (y == 1) y = -1;
+        double e;    
+        if (redshiftDependence == true)
+            e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
+        else
+            e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
 
+        // kinematics
+        double mu = random.randUniform(-1, 1);  
+        s = centerOfMassEnergy2(E, e, mu);
+        errCounter++;
+    } while ( s < 4 * pow(mass_electron * c_squared, 2));
+    
+    double beta = sqrt(1 - 4 * pow(mass_electron * c_squared, 2) / s);
+    double ymin = (1 - beta) / 2;
+    double y = 0;
+    while(true) {
+        y = 0.5 * pow(2 * ymin, random.rand());
+        double pf = 1 / (1 + 2 * beta * beta * (1 - beta * beta));
+        double f1 = y * y / (1 - y);
+        double f2 = 1 - y + (1 - beta * beta) / (1 - y);
+        double f3 = pow(1 - beta * beta, 2) / (4. * y * pow(1 - y, 2) );
+        double gb = pf * (f1 + f2 - f3);
+        if (random.rand() < gb)
+            break;
+    }
+    if (random.rand() > 0.5) 
+        y = 1 - y;
 
     return y;
 }
@@ -403,57 +383,18 @@ void PairProduction::performInteraction(Candidate *candidate) const {
     double f = energyFraction(en, z);
 
     Random &random = Random::instance();
-      
-    // // method 0  
-    // if (random.rand() < pow(f, thinning) && f > 0 && f < 1) {
-    //     double w0 = candidate->getWeight();
-    //     double w = w0 / pow(f, thinning);
-    //     candidate->addSecondary( 11, en * f, w);
-    //     candidate->addSecondary(-11, en * (1 - f), w);
-    //     candidate->setWeight(w);
-    // } 
 
-    // // method 1
-    // if (f > 0 && f < 1){
-    //     double w0 = candidate->getWeight();
-    //     double wm = w0 / pow(f, thinning) / 2;
-    //     double wp = w0 / pow(1 - f, thinning) / 2;
-    //     if (r < 1 - pow(f, thinning) && r < 1 - pow(1 - f, thinning)){
-    //         candidate->addSecondary(11, en * f, wp);  
-    //         candidate->addSecondary(-11, en * (1 - f), wm);
-    //     } else if (r < 1 - pow(f, thinning) && r > 1 - pow(1 - f, thinning)){
-    //         candidate->addSecondary(11, en * f, wm);  
-    //     } else if (r > 1 - pow(f, thinning) && r < pow(1 - f, thinning)){
-    //         candidate->addSecondary(-11, en * (1 - f), wp);  
-    //     } else { 
-    //     }
-    // }
-
-    // method 2 - main (?)
     double w0 = candidate->getWeight();
     candidate->setActive(false);
-
     if (random.rand() < pow(f, thinning) && f > 0 && f < 1){
         double w = w0 / pow(f, thinning);
         candidate->addSecondary(11, en * f, w); 
-        candidate->setWeight(w); 
     }
-
     if (random.rand() < pow(1 - f, thinning) && f > 0 && f < 1){
         double w = w0 / pow(1 - f, thinning);
         candidate->addSecondary(-11, en * (1 - f), w); 
-        candidate->setWeight(w); 
-    }
-
-    // // original
-    // candidate->setActive(false);
-    // if (random.rand() < pow(f, thinning) && f > 0 && f < 1) {
-    //     double w0 = candidate->getWeight();
-    //     double w = w0 / pow(f, thinning);
-    //     candidate->addSecondary( 11, en * f, w);
-    //     candidate->addSecondary(-11, en * (1 - f), w);
-    //     // candidate->setWeight(w);
-    // }       
+    } 
+        
 }
 
 } // namespace grpropa
