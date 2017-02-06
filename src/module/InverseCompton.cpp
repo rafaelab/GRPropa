@@ -272,10 +272,6 @@ double InverseCompton::energyFraction(double E, double z) const {
     */
     Random &random = Random::instance();
 
-    // drawing energy of background photon according to number density (integral)
-    // double e = interpolate(random.rand(), tabProb, tabPhotonEnergy);
-    // e *= (1 + z);
-
     double e = 0;  
     double mu = 0;
     double s = 0;
@@ -423,8 +419,6 @@ void InverseCompton::performInteraction(Candidate *candidate) const {
         double w = w0 / pow(1 - f, thinning);
         candidate->addSecondary(22, en * (1 - f), w); 
     }  
-
-
 }
 
 
