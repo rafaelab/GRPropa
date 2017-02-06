@@ -297,6 +297,7 @@ double InverseCompton::energyFraction(double E, double z) const {
 }
 
 double InverseCompton::energyLossBelowThreshold(double E, double z, double step) const {
+
     Random &random = Random::instance();
 
     // drawing energy of background photon according to number density (integral)
@@ -327,17 +328,27 @@ double InverseCompton::centerOfMassEnergy2(double E, double e, double mu) const 
 
 double InverseCompton::lossLength(int id, double en, double z) const {
 
-    en *= (1 + z);
+    if (id != 22)
+        return std::numeric_limits<double>::max(); // no pair production by other particles
+
     if (en < tabEnergy.front())
         return std::numeric_limits<double>::max(); // below energy threshold
 
     double rate;
-    if (en < tabEnergy.back())
-        rate = interpolate(en, tabEnergy, tabRate); // interpolation
-    else
-        rate = tabRate.back() * pow(en / tabEnergy.back(), -0.6); // extrapolation
+    if (redshiftDependence == false) {
+        en *= (1 + z);
+        if (en < tabEnergy.back())
+            rate = interpolate(en, tabEnergy, tabRate); // interpolation
+        else
+            rate = tabRate.back() * pow(en / tabEnergy.back(), -0.6); // extrapolation
+        rate *= pow(1 + z, 3);  
+    } else {
+        if (en < tabEnergy.back())
+            rate = interpolate2d(z, en, tabRedshift, tabEnergy, tabRate); // interpolation
+        else
+            rate = tabRate.back() * pow(en / tabEnergy.back(), -0.6); // extrapolation
+    }
 
-    rate *= pow(1 + z, 3);
     return 1. / rate;
 }
 
