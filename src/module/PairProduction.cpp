@@ -251,19 +251,6 @@ void PairProduction::initTableBackgroundEnergy(std::string filename) {
             }
         }
         infile.close();
-
-        // int szprob = tabProb.size();
-        // int szen = tabPhotonEnergy.size();
-        // std::cout << tabProb.size() << " " << tabPhotonEnergy.size() << std::endl;
-        // std::cout << "sizes " << szprob << " " << szen << std::endl;
-
-        // for (int i=0; i<tabProb.size(); i++) {
-        //     std::cout << i << " " << tabProb[i] << std::endl;
-        // }
-        // for (int i=0; tabPhotonEnergy.size(); i++)
-        // std::cout << i << " " << tabPhotonEnergy[i] / eV << std::endl;
-
-
     } // conditional: redshift dependent
 }
 
@@ -381,10 +368,9 @@ void PairProduction::performInteraction(Candidate *candidate) const {
     double en = candidate->current.getEnergy();
     double z = candidate->getRedshift();
     double f = energyFraction(en, z);
+    double w0 = candidate->getWeight();
 
     Random &random = Random::instance();
-
-    double w0 = candidate->getWeight();
     candidate->setActive(false);
     if (random.rand() < pow(f, thinning) && f > 0 && f < 1){
         double w = w0 / pow(f, thinning);
@@ -394,7 +380,7 @@ void PairProduction::performInteraction(Candidate *candidate) const {
         double w = w0 / pow(1 - f, thinning);
         candidate->addSecondary(-11, en * (1 - f), w); 
     } 
-        
+
 }
 
 } // namespace grpropa

@@ -384,26 +384,18 @@ void InverseCompton::performInteraction(Candidate *candidate) const {
     double w0 = candidate->getWeight();
     Random &random = Random::instance();
 
-    // // main
-    // if (random.rand() < pow(f, thinning) && f > 0 && f < 1) {
-    //     double w = w0 / pow(f, thinning);
-    //     candidate->current.setEnergy(en * f);
-    //     candidate->setWeight(w);
-    //     // candidate->setActive(true);
-    // }  
-    // if (random.rand() < pow(1 - f, thinning) && f > 0 && f < 1) {
-    //     double w = w0 / pow(1 - f, thinning);
-    //     candidate->addSecondary(22, en * (1 - f), w); 
-    // }  
-
-    // original
     if (random.rand() < pow(f, thinning) && f > 0 && f < 1) {
-        double w0 = candidate->getWeight();
         double w = w0 / pow(f, thinning);
         candidate->current.setEnergy(en * f);
         candidate->setWeight(w);
+    } else {
+        candidate->setActive(false);
+    }
+    if (random.rand() < pow(1 - f, thinning) && f > 0 && f < 1) {
+        double w = w0 / pow(1 - f, thinning);
         candidate->addSecondary(22, en * (1 - f), w); 
     }  
+
 
 }
 
