@@ -272,21 +272,20 @@ double InverseCompton::energyFraction(double E, double z) const {
     */
     Random &random = Random::instance();
 
-    double e = 0;  
-    double mu = 0;
-    double s = 0;
     int errCounter = 0;
+    double s = 0;
 
     do {  
         if (errCounter == this->nMaxIterations)
             return -1;
 
+        double e = 0;
         if (redshiftDependence == true)
             e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
         else
             e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
 
-        mu = random.randUniform(-1, 1);
+        double mu = random.randUniform(-1, 1);
         s = centerOfMassEnergy2(E, e, mu);
 
         errCounter++;
