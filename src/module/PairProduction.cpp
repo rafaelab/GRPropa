@@ -12,7 +12,7 @@ PairProduction::PairProduction(PhotonField photonField, double thinning, double 
     setPhotonField(photonField);
     setThinning(thinning);
     setLimit(limit);
-    setMaxNumberOfInteractions(nMaxIterations);
+    setMaxNumberOfIterations(nMaxIterations);
 }
 
 void PairProduction::setPhotonField(PhotonField photonField) {
@@ -93,7 +93,7 @@ void PairProduction::setThinning(double a) {
     this->thinning = a;
 }
 
-void PairProduction::setMaxNumberOfInteractions(double a) {
+void PairProduction::setMaxNumberOfIterations(double a) {
     this->nMaxIterations = a;
 }
 
@@ -379,7 +379,13 @@ void PairProduction::performInteraction(Candidate *candidate) const {
     if (random.rand() < pow(1 - f, thinning) && f > 0 && f < 1){
         double w = w0 / pow(1 - f, thinning);
         candidate->addSecondary(-11, en * (1 - f), w); 
-    } 
+    }
+
+    // if (random.rand() < pow(f, thinning) && f > 0 && f < 1){
+    //     double w = w0 / pow(f, thinning);
+    //     candidate->addSecondary(11, en * f, w / 2);
+    //     candidate->addSecondary(-11, en * (1 - f), w / 2); 
+    // } 
 
 }
 
