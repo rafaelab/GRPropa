@@ -32,16 +32,18 @@ private:
 
     double thinning; /* number of secondaries to be tracked; if 1 only one secondary is tracked */
     double limit; /* fraction of energy loss length to limit the next step */
+    double nMaxIterations; /* maximum number of attempts to sample s in energy fraction */
     bool redshiftDependence; /* whether EBL model is redshift-dependent */
     double Ethr;  /* energy loss due to the emission of soft photons for E<Ethr */
 
 public:
-    InverseCompton(PhotonField photonField = CMB, double thinning = 0, double limit = 0.1, double Ethr = 1e6 * eV);
+    InverseCompton(PhotonField photonField = CMB, double thinning = 0, double limit = 0.1, double Ethr = 1e6 * eV, double nMaxInteractions = 1000);
 
     void setPhotonField(PhotonField photonField);
     void setLimit(double limit);
     void setThinning(double thinning);
     void setThresholdEnergy(double Ethr);
+    void setMaxNumberOfIterations(double nMaxIterations);
     void initRate(std::string filename);
     void initTableBackgroundEnergy(std::string filename);
     void process(Candidate *candidate) const;

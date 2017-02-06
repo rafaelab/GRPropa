@@ -8,11 +8,12 @@
 
 namespace grpropa {
 
-InverseCompton::InverseCompton(PhotonField photonField, double thinning, double limit, double ethr) {
+InverseCompton::InverseCompton(PhotonField photonField, double thinning, double limit, double ethr, double nMaxInteractions) {
     setPhotonField(photonField);
     setThinning(thinning);
     setLimit(limit);
     setThresholdEnergy(ethr);
+    setMaxNumberOfIterations(nMaxIterations);
 }
 
 void InverseCompton::setPhotonField(PhotonField photonField) {
@@ -97,6 +98,10 @@ void InverseCompton::setThresholdEnergy(double Ethr) {
     this->Ethr = Ethr;
 }
 
+void InverseCompton::setMaxNumberOfIterations(double a) {
+    this->nMaxIterations = a;
+}
+
 void InverseCompton::initRate(std::string filename) {
 
     if (redshiftDependence == false) {
@@ -171,7 +176,7 @@ void InverseCompton::initRate(std::string filename) {
         double entries[nc+1][nl];
         int j = 0;
         while (!infile.eof()) {
-            for (int i = 0; i < nc + 1; i++) {
+            for (int i=0; i<=nc; i++) {
                 double entry = 0;
                 infile >> entry;
                 entries[i][j] = entry;
@@ -181,7 +186,7 @@ void InverseCompton::initRate(std::string filename) {
 
         for (int j=0; j<nl; j++) 
             tabEnergy.push_back(entries[0][j] * eV);
-        for (int i=1; i <nc+1; i++)
+        for (int i=1; i<=nc; i++)
             for (int j=0; j<nl; j++)
                 tabRate.push_back(entries[i][j] / Mpc);
 
@@ -190,10 +195,10 @@ void InverseCompton::initRate(std::string filename) {
 }
 
 void InverseCompton::initTableBackgroundEnergy(std::string filename) {
-   if (redshiftDependence == false) {
+  if (redshiftDependence == false) {
         std::ifstream infile(filename.c_str());
         if (!infile.good())
-            throw std::runtime_error("PairProduction: could not open file " + filename);
+            throw std::runtime_error("InverseCompton: could not open file " + filename);
    
         // clear previously loaded interaction rates
         tabPhotonEnergy.clear();
@@ -214,7 +219,7 @@ void InverseCompton::initTableBackgroundEnergy(std::string filename) {
     } else { // Rates for EBL
         std::ifstream infile(filename.c_str());
         if (!infile.good())
-            throw std::runtime_error("PairProduction: could not open file " + filename);
+            throw std::runtime_error("InverseCompton: could not open file " + filename);
   
         // clear previously loaded interaction rates
         tabPhotonEnergy.clear();
@@ -222,7 +227,7 @@ void InverseCompton::initTableBackgroundEnergy(std::string filename) {
 
         // size of vector is predefined and depends on the model
         int nc; // number of columns (redshifts + one column for energy)
-        int nl = 701; // number of lines (probabilities)
+        int nl = 501; // number of lines (probabilities)
 
         if (photonField == EBL_Finke10) nc = 33;
         else if (photonField == EBL_Gilmore12) nc = 20;
@@ -234,7 +239,7 @@ void InverseCompton::initTableBackgroundEnergy(std::string filename) {
         double entries[nc+1][nl];
         int j = 0;
         while (!infile.eof()) {
-            for (int i=0; i<nc+1; i++) {
+            for (int i=0; i<=nc; i++) {
                 double entry = 0;
                 infile >> entry;
                 entries[i][j] = entry;
@@ -242,15 +247,15 @@ void InverseCompton::initTableBackgroundEnergy(std::string filename) {
             j++;
         }
 
-        for (int j=0; j<nl; j++) 
+        for (int j=0; j<nl; j++) {
             tabProb.push_back(entries[0][j]);
-        for (int i=1; i<nc+1; i++){
+        }
+        for (int i=1; i<=nc; i++){
             for (int j=0; j<nl; j++){
                 tabPhotonEnergy.push_back(entries[i][j] * eV);
             }
         }
         infile.close();
-
     } // conditional: redshift dependent
 }
 
@@ -268,27 +273,46 @@ double InverseCompton::energyFraction(double E, double z) const {
     Random &random = Random::instance();
 
     // drawing energy of background photon according to number density (integral)
-    double e = interpolate(random.rand(), tabProb, tabPhotonEnergy);
-    e *= (1 + z);
-    double ethr = ethr * (1 + z);
+    // double e = interpolate(random.rand(), tabProb, tabPhotonEnergy);
+    // e *= (1 + z);
+
+    double e = 0;  
+    double mu = 0;
+    double s = 0;
+    int errCounter = 0;
+
+    do {  
+        if (errCounter == this->nMaxIterations)
+            return -1;
+
+        if (redshiftDependence == true)
+            e = interpolate2d(z, random.rand(), tabRedshift, tabProb, tabPhotonEnergy);
+        else
+            e = (1 + z) * interpolate(random.rand(), tabProb, tabPhotonEnergy);
+
+        mu = random.randUniform(-1, 1);
+        s = centerOfMassEnergy2(E, e, mu);
+
+        errCounter++;
+    } while (s <= pow(mass_electron * c_squared, 2));
+
+    double ethr = this->Ethr * (1 + z);
 
     // kinematics
-    double mu = random.randUniform(-1, 1);
-    double s = centerOfMassEnergy2(E, e, mu);
     double ymin = pow(mass_electron * c_squared, 2) / s;
     double eps = ethr / E;
     double ymax = 1 - eps; 
     double y;
     double r = random.rand();
     double gb = 0;
-    do {
+    while (true) {
         y = ymin * pow(ymax / ymin, r);
         double f1 = (1 + y * y) / 2;
         double f2 = 2 * ymin * (y - ymin) * (1 - y) / (y * pow(1 - ymin, 2));
         double gb = (f1 - f2);
         if (random.rand() < gb)
             break;
-    } while(r < gb);
+    };
 
     if (y > 0 && y < 1)
         return y;
@@ -297,7 +321,6 @@ double InverseCompton::energyFraction(double E, double z) const {
 }
 
 double InverseCompton::energyLossBelowThreshold(double E, double z, double step) const {
-
     Random &random = Random::instance();
 
     // drawing energy of background photon according to number density (integral)
@@ -328,7 +351,7 @@ double InverseCompton::centerOfMassEnergy2(double E, double e, double mu) const 
 
 double InverseCompton::lossLength(int id, double en, double z) const {
 
-    if (id != 22)
+    if (std::abs(id) != 11)
         return std::numeric_limits<double>::max(); // no pair production by other particles
 
     if (en < tabEnergy.front())
@@ -353,22 +376,17 @@ double InverseCompton::lossLength(int id, double en, double z) const {
 }
 
 void InverseCompton::process(Candidate *c) const {
+
     // execute the loop at least once for limiting the next step
     double step = c->getCurrentStep();
-    int id = c->current.getId();
-    double E = c->current.getEnergy();
-    double z = c->getRedshift();
-    E *= (1 + z);
-
-    // only electrons / positrons allowed
-    if (std::abs(id) != 11)
-        return; 
-
     do {
-        //double rate = interpolate(E, tabEnergy, tabRate);
-        double rate = 1 / lossLength(id, E / (1 + z), z);
-        // cosmological scaling, rate per comoving distance)
-        rate *= pow(1 + z, 2);
+        int id = c->current.getId();
+        if (std::fabs(id) != 11) 
+            return; // only photons allowed
+
+        double en = c->current.getEnergy();
+        double z = c->getRedshift();
+        double rate = 1 / lossLength(id, en, z);
 
         Random &random = Random::instance();
         double randDistance = -log(random.rand()) / rate;
@@ -379,7 +397,6 @@ void InverseCompton::process(Candidate *c) const {
             c->limitNextStep(limit / rate);
             return;
         }
-
         performInteraction(c);
 
         // repeat with remaining steps
