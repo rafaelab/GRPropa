@@ -268,9 +268,9 @@ double PairProduction::energyFraction(double E, double z) const {
 
     double s = 0;
     int errCounter = 0;
-    int nMaxIterations = this->nMaxIterations;
+    
     do {
-        if (errCounter >= nMaxIterations) 
+        if (errCounter >= this->nMaxIterations) 
             return -1;
 
         double e;    
@@ -380,12 +380,6 @@ void PairProduction::performInteraction(Candidate *candidate) const {
         double w = w0 / pow(1 - f, thinning);
         candidate->addSecondary(-11, en * (1 - f), w); 
     }
-
-    // if (random.rand() < pow(f, thinning) && f > 0 && f < 1){
-    //     double w = w0 / pow(f, thinning);
-    //     candidate->addSecondary(11, en * f, w / 2);
-    //     candidate->addSecondary(-11, en * (1 - f), w / 2); 
-    // } 
 
 }
 
