@@ -24,6 +24,7 @@ protected:
 public:
     enum OutputColumn {
         WeightColumn,
+        CosmicTimeColumn,
         TrajectoryLengthColumn,
         RedshiftColumn,
         CurrentIdColumn,

@@ -83,8 +83,7 @@ void setCosmologyParameters(double h, double oM) {
 }
 
 double hubbleRate(double z) {
-    return cosmology.H0
-            * sqrt(cosmology.omegaL + cosmology.omegaM * pow(1 + z, 3));
+    return cosmology.H0 * sqrt(cosmology.omegaL + cosmology.omegaM * pow(1 + z, 3));
 }
 
 double omegaL() {

@@ -1,4 +1,6 @@
 #include "grpropa/Candidate.h"
+#include "grpropa/Cosmology.h"
+#include "grpropa/Units.h"
 
 namespace grpropa {
 
@@ -12,6 +14,7 @@ Candidate::Candidate(int id, double E, Vector3d pos, Vector3d dir, double z, dou
     current = state;
     setRedshift(z);
     setWeight(weight);
+    setCosmicTime(1 / H0() - redshift2LightTravelDistance(z) / c_light);
 }
 
 Candidate::Candidate(const ParticleState &state) :
@@ -28,6 +31,10 @@ void Candidate::setActive(bool b) {
 
 double Candidate::getRedshift() const {
     return redshift;
+}
+
+double Candidate::getCosmicTime() const {
+    return cosmicTime;
 }
 
 double Candidate::getTrajectoryLength() const {
@@ -48,6 +55,10 @@ double Candidate::getWeight() const {
 
 void Candidate::setRedshift(double z) {
     redshift = z;
+}
+
+void Candidate::setCosmicTime(double T) {
+    cosmicTime = T;
 }
 
 void Candidate::setTrajectoryLength(double a) {
@@ -106,6 +117,7 @@ void Candidate::addSecondary(int id, double energy, double weight) {
     ref_ptr<Candidate> secondary = new Candidate;
     secondary->setWeight(weight);
     secondary->setRedshift(redshift);
+    secondary->setCosmicTime(cosmicTime);
     secondary->setTrajectoryLength(trajectoryLength);
     secondary->source = source;
     secondary->previous = previous;
@@ -119,7 +131,8 @@ void Candidate::addSecondary(int id, double energy, double weight) {
 void Candidate::addSecondary(int id, double energy, Vector3d position, double weight) {
     ref_ptr<Candidate> secondary = new Candidate;
     secondary->setRedshift(redshift);
-    secondary->setTrajectoryLength(trajectoryLength-(current.getPosition()-position).getR());
+    secondary->setCosmicTime(cosmicTime + (current.getPosition()-position).getR() / current.getVelocity().getR());
+    secondary->setTrajectoryLength(trajectoryLength - (current.getPosition() - position).getR());
     secondary->setWeight(weight);
     secondary->source = source;
     secondary->previous = previous;
@@ -155,6 +168,7 @@ ref_ptr<Candidate> Candidate::clone(bool recursive) const {
     cloned->active = active;
     cloned->weight = weight;
     cloned->redshift = redshift;
+    cloned->cosmicTime = cosmicTime;
     cloned->trajectoryLength = trajectoryLength;
     cloned->currentStep = currentStep;
     cloned->nextStep = nextStep;

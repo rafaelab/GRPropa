@@ -39,6 +39,8 @@ void TextOutput::printHeader() const {
     *out << "#";
     if (fields.test(WeightColumn))
         *out << "\tw";
+    if (fields.test(CosmicTimeColumn))
+        *out << "\tT";
     if (fields.test(TrajectoryLengthColumn))
         *out << "\tD";
     if (fields.test(RedshiftColumn))
@@ -86,7 +88,9 @@ void TextOutput::printHeader() const {
 
     *out << "\n#\n";
     if (fields.test(WeightColumn))
-        *out << "# weight";
+        *out << "# weight of the particle";
+    if (fields.test(CosmicTimeColumn))
+        *out << "# T             Time ellapsed since the Big Bang [s]";
     if (fields.test(TrajectoryLengthColumn))
         *out << "# D             Trajectory length [" << lengthScale / Mpc << " Mpc]\n";
     if (fields.test(RedshiftColumn))
@@ -118,6 +122,8 @@ void TextOutput::process(Candidate *c) const {
 
     if (fields.test(WeightColumn))
         p += sprintf(buffer + p, "%8.4e\t", c->getWeight());
+    if (fields.test(CosmicTimeColumn))
+        p += sprintf(buffer + p, "%8.7e\t", c->getCosmicTime());
     if (fields.test(TrajectoryLengthColumn))
         p += sprintf(buffer + p, "%8.5f\t", c->getTrajectoryLength() / lengthScale);
     if (fields.test(RedshiftColumn))

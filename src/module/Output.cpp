@@ -29,6 +29,7 @@ void Output::setOutputType(OutputType outputtype) {
     if (outputtype == Trajectory1D) {
         // W, X, ID, E
         set(WeightColumn, true);
+        set(CosmicTimeColumn, true);
         set(CurrentPositionColumn, true);
         set(CurrentIdColumn, true);
         set(CurrentEnergyColumn, true);
@@ -36,6 +37,7 @@ void Output::setOutputType(OutputType outputtype) {
     } else if (outputtype == Event1D) {
         // w, D, ID, E, ID0, E0
         set(WeightColumn, true);
+        set(CosmicTimeColumn, true);
         set(TrajectoryLengthColumn, true);
         set(CurrentIdColumn, true);
         set(CurrentEnergyColumn, true);
@@ -45,6 +47,7 @@ void Output::setOutputType(OutputType outputtype) {
     } else if (outputtype == Trajectory3D) {
         // w, D, ID, E, X, Y, Z, Px, Py, Pz
         set(WeightColumn, true);
+        set(CosmicTimeColumn, true);
         set(TrajectoryLengthColumn, true);
         set(CurrentIdColumn, true);
         set(CurrentEnergyColumn, true);
@@ -54,6 +57,7 @@ void Output::setOutputType(OutputType outputtype) {
     } else if (outputtype == Event3D) {
         // w, D, ID, E, X, Y, Z, Px, Py, Pz, ID0, E0, X0, Y0, Z0
         set(WeightColumn, true);
+        set(CosmicTimeColumn, true);
         set(TrajectoryLengthColumn, true);
         set(CurrentIdColumn, true);
         set(CurrentEnergyColumn, true);

@@ -33,6 +33,7 @@ private:
     bool active; /**< Active status */
     double weight; /**< Weight of the candidate */
     double redshift; /**< Current simulation time-point in terms of redshift z */
+    double cosmicTime; /**< Time ellapsed since the Big Bang for this cosmological model */
     double trajectoryLength; /**< Comoving distance [m] the candidate has travelled so far */
     double currentStep; /**< Size of the currently performed step in [m] comoving units */
     double nextStep; /**< Proposed size of the next propagation step in [m] comoving units */
@@ -54,6 +55,9 @@ public:
 
     void setRedshift(double z);
     double getRedshift() const;
+
+    void setCosmicTime(double T);
+    double getCosmicTime() const;
 
     /**
      Sets the current step and increases the trajectory length accordingly.
