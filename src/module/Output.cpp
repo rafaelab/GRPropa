@@ -49,13 +49,14 @@ void Output::setOutputType(OutputType outputtype) {
         set(WeightColumn, true);
         set(CosmicTimeColumn, true);
         set(TrajectoryLengthColumn, true);
+        set(RedshiftColumn, true);
         set(CurrentIdColumn, true);
         set(CurrentEnergyColumn, true);
         set(CurrentPositionColumn, true);
         set(CurrentDirectionColumn, true);
         set1D(false);
     } else if (outputtype == Event3D) {
-        // w, D, ID, E, X, Y, Z, Px, Py, Pz, ID0, E0, X0, Y0, Z0
+        // w, T, D, ID, E, X, Y, Z, Px, Py, Pz, ID0, E0, X0, Y0, Z0, Px0, Py0, Pz0
         set(WeightColumn, true);
         set(CosmicTimeColumn, true);
         set(TrajectoryLengthColumn, true);
@@ -66,6 +67,7 @@ void Output::setOutputType(OutputType outputtype) {
         set(SourceIdColumn, true);
         set(SourceEnergyColumn, true);
         set(SourcePositionColumn, true);
+        set(SourceDirectionColumn, true);
         set1D(false);
     } else if (outputtype == Everything) {
         enableAll();

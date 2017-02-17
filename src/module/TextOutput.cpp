@@ -88,9 +88,9 @@ void TextOutput::printHeader() const {
 
     *out << "\n#\n";
     if (fields.test(WeightColumn))
-        *out << "# weight of the particle";
+        *out << "# weight of the particle\n";
     if (fields.test(CosmicTimeColumn))
-        *out << "# T             Time ellapsed since the Big Bang [s]";
+        *out << "# T             Time ellapsed since the Big Bang [s]\n";
     if (fields.test(TrajectoryLengthColumn))
         *out << "# D             Trajectory length [" << lengthScale / Mpc << " Mpc]\n";
     if (fields.test(RedshiftColumn))
