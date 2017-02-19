@@ -68,6 +68,7 @@ void Candidate::setTrajectoryLength(double a) {
 void Candidate::setCurrentStep(double lstep) {
     currentStep = lstep;
     trajectoryLength += lstep;
+    cosmicTime += lstep / current.getSpeed();
 }
 
 void Candidate::setNextStep(double step) {
@@ -131,7 +132,7 @@ void Candidate::addSecondary(int id, double energy, double weight) {
 void Candidate::addSecondary(int id, double energy, Vector3d position, double weight) {
     ref_ptr<Candidate> secondary = new Candidate;
     secondary->setRedshift(redshift);
-    secondary->setCosmicTime(cosmicTime + (current.getPosition()-position).getR() / current.getVelocity().getR());
+    secondary->setCosmicTime(cosmicTime);
     secondary->setTrajectoryLength(trajectoryLength - (current.getPosition() - position).getR());
     secondary->setWeight(weight);
     secondary->source = source;
