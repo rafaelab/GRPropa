@@ -123,7 +123,7 @@ void TextOutput::process(Candidate *c) const {
     if (fields.test(WeightColumn))
         p += sprintf(buffer + p, "%8.4e\t", c->getWeight());
     if (fields.test(CosmicTimeColumn))
-        p += sprintf(buffer + p, "%8.7e\t", c->getCosmicTime());
+        p += sprintf(buffer + p, "%17.16e\t", c->getCosmicTime());
     if (fields.test(TrajectoryLengthColumn))
         p += sprintf(buffer + p, "%8.5f\t", c->getTrajectoryLength() / lengthScale);
     if (fields.test(RedshiftColumn))
