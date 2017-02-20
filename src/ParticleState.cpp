@@ -69,8 +69,11 @@ Vector3d ParticleState::getVelocity() const {
 }
 
 double ParticleState::getSpeed() const {
-    double gamma = getLorentzFactor();
-    return c_light * sqrt(1 - pow(gamma, -2));
+    if (getId() == 22)
+        return c_light;
+    else
+        double gamma = getLorentzFactor();
+        return c_light * sqrt(1 - pow(gamma, -2));
 }
 
 Vector3d ParticleState::getMomentum() const {
