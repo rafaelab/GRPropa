@@ -27,8 +27,7 @@ std::string MaximumTrajectoryLength::getFlag() const {
 
 std::string MaximumTrajectoryLength::getDescription() const {
     std::stringstream s;
-    s << "Maximum trajectory length: " << maxLength / Mpc << " Mpc, flag: "
-            << flag;
+    s << "Maximum trajectory length: " << maxLength / Mpc << " Mpc, flag: " << flag;
     return s.str();
 }
 
@@ -108,4 +107,36 @@ std::string MinimumRedshift::getDescription() const {
     return s.str();
 }
 
+MaximumTimeDelay::MaximumTimeDelay(double dtmax, std::string flag) :
+        dtmax(dtmax), flag(flag) {
+}
+
+void MaximumTimeDelay::setMaximumTimeDelay(double dt) {
+    dtmax = dt;
+}
+
+double MaximumTimeDelay::getMaximumTimeDelay() {
+    return dtmax;
+}
+
+void MaximumTimeDelay::setFlag(std::string f) {
+    flag = f;
+}
+
+std::string MaximumTimeDelay::getFlag() const {
+    return flag;
+}
+
+void MaximumTimeDelay::process(Candidate* c) const {
+    if (c->getCosmicTime() < c->getTimeOfEmission() + dtmax)
+        return;
+    c->setActive(false);
+    c->setProperty(flag, getDescription());
+}
+
+std::string MaximumTimeDelay::getDescription() const {
+    std::stringstream s;
+    s << "Maximum time delay: " << dtmax << ", flag: " << flag;
+    return s.str();
+}
 } // namespace grpropa

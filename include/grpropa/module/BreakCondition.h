@@ -66,6 +66,28 @@ public:
     void process(Candidate *candidate) const;
 };
 
+/**
+ @class MaximumTimeDelay
+ @brief Deactivates the candidate below a minimum redshift
+
+ This modules deactivates the candidate above a maximum time delay.
+ Redundant with MinimumRedshift.
+ In that case the property ("Deactivated", module::description) is set.
+ */
+class MaximumTimeDelay: public Module {
+    double dtmax;
+    std::string flag;
+public:
+    MaximumTimeDelay(double dtmax = 0, std::string flag = "Deactivated");
+    void setMaximumTimeDelay(double dtmax);
+    double getMaximumTimeDelay();
+    void setFlag(std::string flag);
+    std::string getFlag() const;
+    std::string getDescription() const;
+    void process(Candidate *candidate) const;
+};
+
+
 } // namespace grpropa
 
 #endif // GRPROPA_BREAKCONDITION_H
