@@ -14,7 +14,8 @@ Candidate::Candidate(int id, double E, Vector3d pos, Vector3d dir, double z, dou
     current = state;
     setRedshift(z);
     setWeight(weight);
-    setCosmicTime(1 / H0() - redshift2LightTravelDistance(z) / c_light);
+    timeOfEmission = 1 / H0() - redshift2LightTravelDistance(z) / c_light;
+    setCosmicTime(timeOfEmission);
 }
 
 Candidate::Candidate(const ParticleState &state) :
@@ -53,12 +54,20 @@ double Candidate::getWeight() const {
     return weight;
 }
 
+double Candidate::getTimeOfEmission() const {
+    return timeOfEmission;
+}
+
 void Candidate::setRedshift(double z) {
     redshift = z;
 }
 
 void Candidate::setCosmicTime(double T) {
     cosmicTime = T;
+}
+
+void Candidate::setTimeOfEmission(double T) {
+    timeOfEmission = T;
 }
 
 void Candidate::setTrajectoryLength(double a) {
@@ -170,6 +179,7 @@ ref_ptr<Candidate> Candidate::clone(bool recursive) const {
     cloned->weight = weight;
     cloned->redshift = redshift;
     cloned->cosmicTime = cosmicTime;
+    cloned->timeOfEmission = timeOfEmission;
     cloned->trajectoryLength = trajectoryLength;
     cloned->currentStep = currentStep;
     cloned->nextStep = nextStep;
