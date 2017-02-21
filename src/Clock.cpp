@@ -52,8 +52,7 @@ public:
         LONGLONG elapsedTime = currentTime.QuadPart - startTime.QuadPart;
 
         // Compute the number of millisecond ticks elapsed.
-        unsigned long msecTicks = (unsigned long) (1000 * elapsedTime
-                / clockFrequency.QuadPart);
+        unsigned long msecTicks = (unsigned long) (1000 * elapsedTime / clockFrequency.QuadPart);
 
         // Check for unexpected leaps in the Win32 performance counter.
         // (This is caused by unexpected data across the PCI to ISA
@@ -62,9 +61,7 @@ public:
         signed long msecOff = (signed long) (msecTicks - elapsedTicks);
         if (msecOff < -100 || msecOff > 100) {
             // Adjust the starting time forwards.
-            LONGLONG msecAdjustment = std::min(
-                    msecOff * clockFrequency.QuadPart / 1000,
-                    elapsedTime - prevElapsedTime);
+            LONGLONG msecAdjustment = std::min(msecOff * clockFrequency.QuadPart / 1000, elapsedTime - prevElapsedTime);
             startTime.QuadPart += msecAdjustment;
             elapsedTime -= msecAdjustment;
         }
@@ -73,8 +70,7 @@ public:
         prevElapsedTime = elapsedTime;
 
         // Convert to microseconds.
-        unsigned long usecTicks = (unsigned long) (1000000 * elapsedTime
-                / clockFrequency.QuadPart);
+        unsigned long usecTicks = (unsigned long) (1000000 * elapsedTime / clockFrequency.QuadPart);
 
         return double(usecTicks) / 1000000;
     }
@@ -142,7 +138,7 @@ Clock &Clock::getInstance() {
 #endif
     int i = omp_get_thread_num();
     if (i >= MAX_THREAD)
-    throw std::runtime_error("grpropa::Clock: more than MAX_THREAD threads!");
+        throw std::runtime_error("grpropa::Clock: more than MAX_THREAD threads!");
     return tls[i].r;
 }
 #else
