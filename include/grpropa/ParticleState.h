@@ -42,7 +42,7 @@ public:
 
     double getCharge() const; /* Electric charge of the particle in [C] */
     double getMass() const; /* Mass of the particle in [kg] */
-    void setLorentzFactor(double gamma); /* Set Lorentz factor and modify the particle's energy accordingly */
+    void setLorentzFactor(double lf); /* Set Lorentz factor and modify the particle's energy accordingly */
     double getLorentzFactor() const; /* Get Lorentz factor */
     Vector3d getVelocity() const; /* Velocity: direction times the speed of light in [m/s] */
     Vector3d getMomentum() const; /* Momentum: direction times energy divided by the speed of light [kg m/s] */
