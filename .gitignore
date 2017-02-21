@@ -1,0 +1,9 @@
+.*
+!.travis.yml
+
+*~
+
+build/*
+
+*.png
+*.pyc
