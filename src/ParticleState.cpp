@@ -41,6 +41,8 @@ double ParticleState::getEnergy() const {
 void ParticleState::setId(int newId) {
     id = newId;
     charge = HepPID::charge(id) * eplus;
+    if (id == std::abs(11))
+        pmass = mass_electron;
 }
 
 int ParticleState::getId() const {
