@@ -7,36 +7,36 @@
 
 namespace grpropa {
 
-Synchrotron::Synchrotron(ref_ptr<MagneticField> field, double Bcr) 
+Synchrotron::Synchrotron(ref_ptr<MagneticField> field, double limit) 
 {
     this->Bfield = field;
-    this->CriticalB = Bcr;
+    this->limit = limit;
 }
 
 void Synchrotron::process(Candidate *c) const {
     // check if electrons / positrons
-    if (std::abs(c->current.getId()) != 11 )
+    if (std::abs(c->current.getId()) != 11)
         return;
 
     double z = c->getRedshift();
-    double E = c->current.getEnergy();
-    double gamma = c->current.getLorentzFactor();
+    double E = c->current.getEnergy() * (1 + z);
+    double lf = c->current.getLorentzFactor();
     Vector3d pos = c->current.getPosition();
-    Vector3d p = c->current.getMomentum();    
     Vector3d b = Bfield->getField(pos);
+    Vector3d v = c->current.getVelocity();
+    double beta = c->current.getSpeed() / c_light;
+    double step = c->getCurrentStep() / (1 + z);
     double B = b.getR();
 
-    //E *= 1 + z;
-    /*double pi = 3.1415926;
-    double hbar = h_planck / (2 * pi);
-    double chi = (p.cross(b)).getR() / ( mass_electron * mass_electron * c_light * CriticalB );
-    double dE = pow(mass_electron * c_squared, 2) / pow( 1 + 4.8 * (1 + chi) * log(1 + 1.7 * chi)  + 3.44 * chi * chi, 2/3 ) * (eV / (hbar * c_light)) / 137.;*/ // from Elmag
-    double dE = 1.058e-14 * pow(B * gamma, 2) * (1 - 1 / pow(gamma, 2)); // from Longarir
-    dE = dE * c->getCurrentStep();
-    dE = std::min(E, dE); // energy loss should not be larger than energy of particle
-    c->current.setEnergy(E * (1 - dE));
-}
+    double vperp = v.cross(b).getR() / B;
+    double RL = lf * mass_electron * vperp / (eplus * B);
+    double dEdx = (2. / 3.) * pow(eplus, 2) * pow(beta * lf, 4) / pow(RL, 2); 
 
+    double dE = std::abs(dEdx * step);
+    dE = std::min(E, dE); 
+    c->current.setEnergy(E - dE);
+    // c->limitNextStep(limit * E / dEdx);
+}
 
 
 } // namespace grpropa
