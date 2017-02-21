@@ -41,8 +41,10 @@ double ParticleState::getEnergy() const {
 void ParticleState::setId(int newId) {
     id = newId;
     charge = HepPID::charge(id) * eplus;
-    if (id == std::abs(11))
+    if (std::abs(id) == 11)
         pmass = mass_electron;
+    else
+        pmass = 0;
 }
 
 int ParticleState::getId() const {
@@ -58,12 +60,14 @@ double ParticleState::getCharge() const {
 }
 
 double ParticleState::getLorentzFactor() const {
-    return energy / (pmass * c_squared);
+    if (std::abs(id) == 11)
+        return energy / (pmass * c_squared);
+    else 
+        return -1; 
 }
 
 void ParticleState::setLorentzFactor(double lf) {
     lf = std::max(0., lf); // prevent negative Lorentz factors
-    energy = lf * pmass * c_squared;
 }
 
 Vector3d ParticleState::getVelocity() const {
@@ -71,12 +75,10 @@ Vector3d ParticleState::getVelocity() const {
 }
 
 double ParticleState::getSpeed() const {
-    if (getId() == 22)
+    if (id == 22)
         return c_light;
-    else {
-        double lf = getLorentzFactor();
-        return c_light * sqrt(1 - pow(lf, -2));
-    }
+    else 
+        return c_light * sqrt(1 - pow(getLorentzFactor(), -2));
 }
 
 Vector3d ParticleState::getMomentum() const {
