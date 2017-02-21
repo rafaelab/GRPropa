@@ -16,7 +16,7 @@ namespace grpropa {
  The cosmic ray state is defined by particle ID, energy and position and
  direction vector.
  For faster lookup mass and charge of the particle are stored as members.
- */
+*/
 class ParticleState {
 private:
     int id; /* particle ID (Particle Data Group numbering scheme) */
@@ -30,7 +30,7 @@ public:
     ParticleState(int id = 0, double energy = 0, Vector3d position = Vector3d(0, 0, 0), Vector3d direction = Vector3d(-1, 0, 0));
 
     std::string getDescription() const;
-    void setPosition(const Vector3d &pos); //* Set position in comoving coordinates */
+    void setPosition(const Vector3d &pos); /* Set position in comoving coordinates */
     const Vector3d &getPosition() const; /* Get position in comoving coordinates */
     void setDirection(const Vector3d &dir); /* Set direction unit vector, non unit-vectors are normalized */
     const Vector3d &getDirection() const; /* Get direction unit vector */
