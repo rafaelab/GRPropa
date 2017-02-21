@@ -141,7 +141,7 @@ void InverseCompton::initRate(std::string filename) {
         std::vector<double> redshifts;
         if (photonField == EBL_Finke10) {
             nc = 33;
-            double redshifts[] = {0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.07, 0.09, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00, 1.20, 1.40, 1.60, 1.80, 2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 4.99};
+            double redshifts[] = {0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.07, 0.09, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0, 0.60, 0.70, 0.80, 0.90, 1.00, 1.20, 1.40, 1.60, 1.80, 2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 4.99};
             for (int k=0; k<nc; k++) 
                 tabRedshift.push_back(redshifts[k]);
         }
@@ -289,6 +289,7 @@ double InverseCompton::energyFraction(double E, double z) const {
         s = centerOfMassEnergy2(E, e, mu);
 
         errCounter++;
+
     } while (s <= pow(mass_electron * c_squared, 2));
 
     double ethr = this->Ethr * (1 + z);
@@ -411,9 +412,11 @@ void InverseCompton::performInteraction(Candidate *candidate) const {
         double w = w0 / pow(f, thinning);
         candidate->current.setEnergy(en * f);
         candidate->setWeight(w);
-    } else {
+    } 
+    else {
         candidate->setActive(false);
     }
+
     if (random.rand() < pow(1 - f, thinning) && f > 0 && f < 1) {
         double w = w0 / pow(1 - f, thinning);
         candidate->addSecondary(22, en * (1 - f), w); 

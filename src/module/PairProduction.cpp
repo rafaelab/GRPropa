@@ -268,7 +268,7 @@ double PairProduction::energyFraction(double E, double z) const {
 
     double s = 0;
     int errCounter = 0;
-    
+
     do {
         if (errCounter >= this->nMaxIterations) 
             return -1;
