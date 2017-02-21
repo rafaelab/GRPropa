@@ -4,6 +4,7 @@
 *~
 
 build/*
+
 *.pdf
 *.png
 *.pyc
