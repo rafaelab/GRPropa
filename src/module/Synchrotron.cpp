@@ -15,7 +15,7 @@ Synchrotron::Synchrotron(ref_ptr<MagneticField> field, double Bcr)
 
 void Synchrotron::process(Candidate *c) const {
     // check if electrons / positrons
-    if (abs(c->current.getId()) != 11 )
+    if (std::abs(c->current.getId()) != 11 )
         return;
 
     double z = c->getRedshift();
