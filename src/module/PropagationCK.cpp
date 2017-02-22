@@ -51,12 +51,13 @@ PropagationCK::Y PropagationCK::dYdt(const Y &y, ParticleState &p) const {
     return Y(velocity, dudt);
 }
 
-PropagationCK::PropagationCK(ref_ptr<MagneticField> field, double tolerance, double minStep, double maxStep) :
+PropagationCK::PropagationCK(ref_ptr<MagneticField> field, double tolerance, double minStep, double maxStep, int nMax) :
         minStep(0) {
     setField(field);
     setTolerance(tolerance);
     setMaximumStep(maxStep);
     setMinimumStep(minStep);
+    nMaxIterations = nMax;
 
     // load Cash-Karp coefficients
     a.assign(cash_karp_a, cash_karp_a + 36);
@@ -88,6 +89,7 @@ void PropagationCK::process(Candidate *candidate) const {
 
     // try performing a steps until the relative error is less than the desired
     // tolerance or the minimum step size has been reached
+    int counter = 0;
     do {
         hTry = h;
         tryStep(yIn, yOut, yErr, hTry, current);
@@ -98,6 +100,13 @@ void PropagationCK::process(Candidate *candidate) const {
         h *= 0.95 * pow(r, -0.2);
         // limit change of new step size
         h = clip(h, 0.1 * hTry, 5 * hTry);
+
+        // stop tracking particles that do not reach the desired tolerance
+        if (counter == nMaxIterations) { 
+            candidate->setActive(false);
+            return;
+        }
+        counter++;
 
     } while (r > 1 && h > minStep);
 
@@ -113,8 +122,7 @@ void PropagationCK::setField(ref_ptr<MagneticField> f) {
 
 void PropagationCK::setTolerance(double tol) {
     if ((tol > 1) or (tol < 0))
-        throw std::runtime_error(
-                "PropagationCK: target error not in range 0-1");
+        throw std::runtime_error("PropagationCK: target error not in range 0-1");
     tolerance = tol;
 }
 
