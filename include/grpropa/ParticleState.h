@@ -4,6 +4,7 @@
 #include "grpropa/Vector3.h"
 
 #include <sstream>
+#include <cstdlib>
 
 namespace grpropa {
 
